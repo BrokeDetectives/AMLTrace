@@ -13,9 +13,9 @@
 
 **Live Website:** https://aml-trace.vercel.app
 
-**Product Demo:** [\[ADD DEMO VIDEO LINK\]](https://drive.google.com/file/d/18gs7fiQkV0S2ZrcRuWyLhi_7Zyw-F4RO/view?usp=sharing)
+**Product Demo:** [\[Watch Demo\]](https://drive.google.com/file/d/18gs7fiQkV0S2ZrcRuWyLhi_7Zyw-F4RO/view?usp=sharing)
 
-**Pitch Deck:** [\[ADD PITCH DECK LINK\]](https://docs.google.com/presentation/d/1cMzpih36HAQVnD4TPXzAoxlLLcKBRO-W/edit?usp=sharing&ouid=109609182894906747138&rtpof=true&sd=true)
+**Pitch Deck:** [\[View Pitch Deck\]](https://docs.google.com/presentation/d/1cMzpih36HAQVnD4TPXzAoxlLLcKBRO-W/edit?usp=sharing&ouid=109609182894906747138&rtpof=true&sd=true)
 
 ---
 
