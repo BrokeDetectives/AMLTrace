@@ -1,324 +1,862 @@
-# AMLTrace: Tracing Financial Crime Across Patterns
+# AMLTrace — Trace the Money. Expose the Network.
 
-An anti-money-laundering investigation console. It ingests a transaction ledger, builds a
-directed money-flow graph, runs nine detection layers over it, and produces what a
-compliance team actually needs: a triaged alert queue, the ring structure behind the
-alerts, a reconstructed laundering timeline, a watchlist of new leads, filing-ready
-FIU-IND Suspicious Transaction Reports, and an honest account of what the whole thing
-costs to run.
+> **AMLTrace helps financial investigators move from a suspicious transaction to the network, timeline, evidence, and investigation behind it.**
 
-Built for **Build $ Bank**, IGDTUW
+**Team:** Broke Detectives
+**Project:** AMLTrace  
+**Hackathon:** Build $ Bank  
+**Institution:** IGDTUW
 
 ---
 
-## Run it
+## Live Demo
 
-```bash
-pip install -r requirements.txt
-python app.py
+**Live Website:** https://aml-trace.vercel.app
+
+**Product Demo:** [\[ADD DEMO VIDEO LINK\]](https://drive.google.com/file/d/18gs7fiQkV0S2ZrcRuWyLhi_7Zyw-F4RO/view?usp=sharing)
+
+**Pitch Deck:** [\[ADD PITCH DECK LINK\]](https://docs.google.com/presentation/d/1cMzpih36HAQVnD4TPXzAoxlLLcKBRO-W/edit?usp=sharing&ouid=109609182894906747138&rtpof=true&sd=true)
+
+---
+
+# Product Demo
+
+Add screenshots or a short GIF of the working AMLTrace dashboard here.
+
+Recommended screenshots:
+
+1. Overview / Dashboard
+2. Alert Queue
+3. Transaction Network
+4. Laundering Timeline
+5. Suspicious Ring / Investigation View
+6. STR Dossier
+7. Adversarial Test
+
+AMLTrace is designed as an investigation console rather than simply a transaction-scoring dashboard.
+
+---
+
+# The Problem
+
+Money laundering rarely happens through one suspicious transaction.
+
+A laundering operation can involve multiple accounts, intermediaries, transaction chains, and time-separated movements of money.
+
+For example:
+
+```text
+Account A
+   │
+   ├──────► Account B
+   │             │
+   ├──────► Account C
+   │             │
+   └──────► Account D
+                 │
+                 ▼
+              Account E
 ```
 
-Then open <http://127.0.0.1:5000>.
+Viewed individually, many of these transactions may appear ordinary.
 
-Offline version, same engine, writes every artefact to `outputs/`:
+Viewed together, they can reveal:
+
+- Fund splitting and consolidation
+- Mule or pass-through accounts
+- Circular movement of funds
+- Structuring around reporting thresholds
+- Suspicious intermediary accounts
+- Coordinated transaction networks
+
+This creates a key challenge for AML systems:
+
+> **The suspiciousness of a transaction often depends on the network around it.**
+
+Traditional transaction-level monitoring can therefore leave investigators with a long list of alerts without enough context to understand **what actually happened**.
+
+---
+
+# Our Solution
+
+**AMLTrace** approaches AML investigation as a **network-tracing problem**.
+
+The system ingests a transaction ledger, constructs a directed money-flow graph, applies multiple detection layers, correlates the resulting evidence, and presents the investigation through an interactive interface.
+
+```text
+Transaction Ledger
+       ↓
+Data Processing
+       ↓
+Transaction Graph
+       ↓
+Detection Engine
+       ↓
+Risk Correlation
+       ↓
+┌─────────────────────────────┐
+│ Alert Queue                 │
+│ Transaction Network         │
+│ Laundering Timeline         │
+│ Suspicious Rings            │
+│ Evidence & Model Analysis   │
+│ STR Dossier                 │
+└─────────────────────────────┘
+```
+
+The goal is not simply to answer:
+
+> **"Is this account suspicious?"**
+
+It is to answer:
+
+> **"Why is it suspicious, how did the money move, who is connected, and what evidence can an investigator act on?"**
+
+---
+
+# Why Network-Based AML?
+
+A transaction ledger contains more information than individual transaction amounts.
+
+The relationships between accounts can reveal patterns that are difficult to see when transactions are considered independently.
+
+AMLTrace therefore models transactions as a directed graph:
+
+```text
+        ┌──────────┐
+        │ Account A│
+        └────┬─────┘
+             │
+       ┌─────┼─────┐
+       ▼     ▼     ▼
+   Account B C   Account D
+       │     │     │
+       └─────┼─────┘
+             ▼
+         Account E
+```
+
+This allows the system to investigate:
+
+- **Who sends money to whom?**
+- **Where does money split?**
+- **Where does it reconverge?**
+- **Which accounts act as intermediaries?**
+- **Does money eventually return to its origin?**
+- **Which accounts connect otherwise separate suspicious groups?**
+
+---
+
+# What AMLTrace Contributes
+
+AMLTrace combines several perspectives instead of depending on a single detector.
+
+### Transaction Rules
+
+Detect known suspicious transaction patterns such as structuring and pass-through behaviour.
+
+### Graph Analysis
+
+Identify relationships, transaction rings, fan-out/fan-in structures, and network chokepoints.
+
+### Temporal Analysis
+
+Understand how quickly money moves and reconstruct suspicious activity chronologically.
+
+### Behavioural Analysis
+
+Use account-level behavioural features to identify anomalies that can corroborate rule-based evidence.
+
+### Adaptive Detection
+
+Test whether suspicious actors can deliberately operate outside fixed detection thresholds.
+
+### Investigation
+
+Turn detection results into an investigator-facing workflow rather than stopping at a risk score.
+
+---
+
+# How It Works
+
+```text
+User / Bank Transaction Data
+            ↓
+      Dataset Adapter
+            ↓
+    Transaction Ledger
+            ↓
+      Directed Graph
+            ↓
+   ┌────────┴────────┐
+   │ Detection Engine│
+   └────────┬────────┘
+            ↓
+   ┌─────────┼──────────┐
+   ▼         ▼          ▼
+ Rules     Graph        ML
+   │         │          │
+   └─────────┼──────────┘
+            ↓
+       Risk Correlation
+            ↓
+    Investigation Engine
+            ↓
+  ┌──────────┼─────────────┐
+  ▼          ▼             ▼
+Alerts    Network      Timeline
+  │          │             │
+  └──────────┼─────────────┘
+            ↓
+        STR Dossier
+```
+
+The same underlying analysis engine powers both the dashboard and the offline report-generation pipeline.
+
+---
+
+# Detection Engine
+
+AMLTrace currently contains **nine detection layers**.
+
+| Layer | Detection | Type | Purpose |
+|---|---|---|---|
+| **L1** | Structuring / Smurfing | Rule | Detect transfers positioned just below the ₹10,00,000 CTR threshold and many-to-one funnels |
+| **L2** | Fan-out → Fan-in | Graph | Detect funds split across intermediaries and reconverging |
+| **L3** | Circular Flow | Graph + Time | Detect money that returns to its origin through transaction cycles |
+| **L4** | Pass-through Conduit | Temporal | Detect accounts receiving and forwarding approximately similar amounts within a short period |
+| **L5** | Sub-network Chokepoint | Graph | Identify strategically important accounts within suspicious sub-networks |
+| **L6** | Behavioural Anomaly | ML | Identify unusual account-level behaviour using Isolation Forest |
+| **L7** | Suspicion Propagation | Graph | Generate leads from accounts exposed to suspicious networks |
+| **L8** | Laundering Timeline | Temporal | Reconstruct placement → layering → integration |
+| **L9** | Threshold Evasion | Adaptive | Detect activity deliberately designed to stay outside fixed thresholds |
+
+---
+
+# Risk Scoring
+
+AMLTrace combines evidence from multiple detection layers.
+
+```text
+Risk Score
+    =
+2 × Primary Typology Signals
+    +
+1 × Corroborating Signals
+```
+
+| Score | Classification |
+|---:|---|
+| **≥ 4** | CRITICAL |
+| **3** | HIGH |
+| **2** | MEDIUM |
+| **1** | LOW |
+
+A key design decision is that **ML anomaly detection is corroborating evidence rather than an independent source of regulatory alerts**.
+
+This keeps the investigation pipeline focused on explainable evidence.
+
+---
+
+# Key Features
+
+## 1. Alert Queue
+
+Investigators receive a prioritised queue of suspicious accounts with the signals responsible for each alert.
+
+Each alert can be traced back to the underlying transaction activity.
+
+---
+
+## 2. Transaction Network
+
+The interactive graph exposes the movement of money between accounts.
+
+Investigators can identify:
+
+- Sources
+- Intermediaries
+- Destinations
+- Suspicious clusters
+- Transaction paths
+- Network chokepoints
+- Connected suspicious accounts
+
+---
+
+## 3. Suspicious Rings
+
+AMLTrace identifies suspicious sub-networks from the transaction graph.
+
+A ring identifier is preserved across the alert queue, exports, and investigation dossiers so that the same suspicious network can be consistently referenced throughout the workflow.
+
+---
+
+## 4. Laundering Timeline
+
+AMLTrace reconstructs suspicious activity chronologically.
+
+```text
+Placement
+    ↓
+Initial suspicious deposits
+    ↓
+Layering
+    ↓
+Intermediary accounts
+    ↓
+Fund movement / splitting
+    ↓
+Consolidation
+    ↓
+Integration
+```
+
+This helps investigators understand the **sequence of events**, not just the final risk score.
+
+---
+
+## 5. Suspicion Propagation
+
+Suspicious activity can expose previously unflagged accounts.
+
+AMLTrace uses the transaction graph to generate these accounts as **investigative leads**, while keeping them outside the primary alerting pipeline.
+
+This avoids allowing guilt-by-association to artificially inflate alert precision.
+
+---
+
+## 6. Explainable Evidence
+
+Every alert can be traced back to the signals that generated it.
+
+Example:
+
+```text
+ACCOUNT
+ACC-1042
+
+RISK
+CRITICAL
+
+SIGNALS
+✓ Fan-in detected
+✓ Pass-through behaviour
+✓ Sub-network chokepoint
+
+CONNECTED ACCOUNTS
+6
+
+SUSPICIOUS TRANSACTIONS
+14
+
+ESTIMATED SUSPICIOUS FLOW
+₹18.4L
+```
+
+The investigator can then move from the alert into the network and timeline that produced it.
+
+---
+
+## 7. STR Investigation Dossier
+
+AMLTrace generates structured investigation dossiers containing relevant account, transaction, network, and detection evidence.
+
+The dossiers follow an FIU-IND-oriented STR structure for the prototype.
+
+---
+
+## 8. Data Provenance
+
+The system records the parameters used to calibrate the synthetic transaction ledger and exposes their sources.
+
+```text
+GET /api/export/provenance.json
+```
+
+This allows the calibration to be inspected rather than treated as an unexplained assumption.
+
+---
+
+## 9. Detection Lab
+
+AMLTrace can analyse uploaded CSV files and automatically identify supported dataset schemas.
+
+This allows the same investigation engine to be tested beyond the bundled synthetic ledger.
+
+---
+
+# Adaptive Detection
+
+## What happens when the launderer knows the rules?
+
+Fixed rules can become predictable.
+
+An adversary could attempt to:
+
+- Stay below a reporting threshold
+- Spread transactions over a longer period
+- Change transaction timing
+- Add unrelated transactions
+- Reduce the apparent dedication of mule accounts
+- Alter the number of transaction hops
+
+AMLTrace therefore includes **L9: Threshold Evasion**.
+
+Instead of adding another fixed threshold that an adversary can simply avoid, L9 looks for behavioural properties that arise from moving a particular amount of money through other people's accounts.
+
+---
+
+# Adversarial Testing
+
+AMLTrace includes an adversarial testing framework designed to attack its own detection engine.
+
+Two ledgers are used:
+
+1. **Threshold-evasive relay ring**
+2. **Peeling chain**, a typology not explicitly implemented as a detector
+
+| Adversarial Ledger | Layers 1–8 | With L9 | Precision | FP |
+|---|---:|---:|---:|---:|
+| Threshold-evasive relay ring | 0.00 recall | **1.00 recall** | 1.00 | 0 |
+| Peeling chain | 0.00 recall | **1.00 recall** | 1.00 | 0 |
+
+The purpose of the benchmark is to test whether the adaptive layer generalises rather than simply fitting itself to the first adversarial example.
+
+---
+
+# Hard Negatives
+
+A detector should not flag legitimate businesses simply because their transaction topology resembles a laundering pattern.
+
+AMLTrace therefore contains **19 legitimate accounts deliberately designed to reproduce suspicious-looking transaction structures**.
+
+| Legitimate Activity | Resembles | Why It Is Legitimate |
+|---|---|---|
+| Customer → contractors → shared distributor | Fan-out / Fan-in | Contractors maintain unrelated legitimate activity |
+| Merchant ↔ PSP ↔ acquirer | Circular flow | Standing commercial settlement relationship |
+| Escrow agent | Pass-through | Legitimate business model with many counterparties |
+| Payroll bureau near CTR threshold | Structuring | Also performs transactions above the threshold |
+
+The system uses economic and behavioural discriminators such as:
+
+- Threshold avoidance
+- Branch dedication
+- Standing relationships
+- Settlement-rail recurrence
+
+Without these discriminators, pure topology matching produces substantially more false positives.
+
+---
+
+# Streaming Replay
+
+AMLTrace can simulate the behaviour of the detector as transactions arrive over time.
+
+The system re-runs detection using only the transactions available up to each day.
+
+On the bundled ledger:
+
+- **First alert possible:** Day 3
+- **Mean detection lag:** 4.23 days
+- **Median detection lag:** 4 days
+- **Worst detection lag:** 17 days
+- **Laundering-linked accounts eventually surfaced:** 35 / 35
+
+The replay also highlights an important AML operational trade-off.
+
+A batch detector can use the complete transaction history, while an early streaming detector has less historical evidence available.
+
+AMLTrace makes this difference visible instead of presenting only a single batch performance number.
+
+---
+
+# Performance Metrics
+
+The bundled synthetic ledger contains:
+
+**187 accounts**
+
+- 35 fraud-linked
+- 19 legitimate hard negatives
+- 133 ordinary accounts
+
+**301 transactions**
+
+**₹10.72 Cr total transaction value**
+
+### Detection Results
+
+| Configuration | Precision | Recall | F1 | FP |
+|---|---:|---:|---:|---:|
+| L1 Structuring | 1.00 | 0.17 | 0.29 | 0 |
+| + L2 Fan patterns | 1.00 | 0.60 | 0.75 | 0 |
+| + L3 Circular flows | 1.00 | 0.94 | 0.97 | 0 |
+| + L4 Pass-through | 1.00 | 1.00 | 1.00 | 0 |
+| + L9 Evasion adaptive | 1.00 | 1.00 | 1.00 | 0 |
+| **Full system** | **1.00** | **1.00** | **1.00** | **0** |
+| ML alone, without graph context | 0.35 | 0.17 | 0.23 | 11 |
+
+Additional robustness testing produced a mean **Jaccard similarity of 0.97** across 16 independent threshold perturbations.
+
+The system detected **9 suspicious rings** from the detected alert sub-network rather than relying on labels to define those rings.
+
+---
+
+# Alert Economics
+
+Detection quality is only one part of the AML problem.
+
+Every alert also consumes analyst time.
+
+For the bundled ledger, AMLTrace estimates:
+
+- **0.32 analyst FTE**
+- **₹7.01L annual staffing cost**
+- **₹1,646 per alert**
+- **₹9.25L illicit flow surfaced per analyst hour**
+
+The dashboard also provides a **threshold ↔ cost frontier** to explore the operational trade-off between detection performance and analyst workload.
+
+---
+
+# Indian Data Calibration
+
+The prototype does not use real customer-level banking data.
+
+Instead, AMLTrace uses a **synthetic transaction ledger calibrated against publicly available Indian financial-system information**.
+
+| Calibrated Parameter | Reference |
+|---|---|
+| NEFT / RTGS / IMPS / UPI channel mix | RBI Payment Systems data and NPCI statistics |
+| Average ticket size | RBI Payment Systems data |
+| CTR threshold of ₹10,00,000 | PML (Maintenance of Records) Rules, 2005 |
+| RTGS limits | RBI / NPCI regulations and circulars |
+| Institution codes | Real IFSC prefixes with synthetic account numbers |
+| Operating rhythm / AML behaviour | FATF typologies |
+
+All accounts, counterparties, and suspicious rings are synthetic.
+
+**No real customer, account, or institution is represented.**
+
+---
+
+# Supported Datasets
+
+AMLTrace supports automatic schema detection for:
+
+| Adapter | Dataset |
+|---|---|
+| `ibm_aml` | IBM Transactions for Anti Money Laundering |
+| `paysim` | PaySim mobile money |
+| `amlsim` | IBM AMLSim generator output |
+| `elliptic` | Elliptic Bitcoin transaction graph |
+| `generic` | `sender, receiver, amount` + optional time/channel/fraud fields |
+
+A supported CSV can be uploaded through the **Detection Lab** or analysed from the command line.
+
+---
+
+# Technology Stack
+
+| Component | Technology |
+|---|---|
+| Backend | Python |
+| Web Framework | Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Graph Analysis | Graph-based transaction analysis |
+| Machine Learning | Isolation Forest |
+| Data Input | CSV |
+| Exports | CSV, JSON, PNG, Excel |
+| Runtime | Local / offline compatible |
+
+The frontend is implemented without external CDN dependencies, allowing the prototype to run on a demo laptop without an internet connection.
+
+---
+
+# Architecture
+
+```text
+                         ┌──────────────────┐
+                         │ Transaction Data │
+                         └────────┬─────────┘
+                                  │
+                                  ▼
+                       ┌─────────────────────┐
+                       │ Dataset Adapters    │
+                       └─────────┬───────────┘
+                                 │
+                                 ▼
+                       ┌─────────────────────┐
+                       │    AML Engine       │
+                       │                     │
+                       │ L1 Structuring      │
+                       │ L2 Fan-out/Fan-in   │
+                       │ L3 Circular Flow    │
+                       │ L4 Pass-through     │
+                       │ L5 Chokepoint       │
+                       │ L6 ML Anomaly       │
+                       │ L7 Propagation      │
+                       │ L8 Timeline         │
+                       │ L9 Evasion          │
+                       └─────────┬───────────┘
+                                 │
+                                 ▼
+                       ┌─────────────────────┐
+                       │ Risk Correlation    │
+                       └─────────┬───────────┘
+                                 │
+                                 ▼
+                       ┌─────────────────────┐
+                       │ Investigation API   │
+                       └─────────┬───────────┘
+                                 │
+                                 ▼
+                       ┌─────────────────────┐
+                       │  AMLTrace Dashboard │
+                       └─────────────────────┘
+```
+
+---
+
+# Reproducibility
+
+The analysis pipeline is designed to produce deterministic results.
+
+The stochastic ML component is seeded, graph traversal is deterministic, and the report-generation pipeline produces reproducible artefacts.
+
+Run:
 
 ```bash
 python generate_report.py
-python generate_report.py --csv HI-Small_Trans.csv --limit 50000   # a real public dataset
 ```
 
-No build step, no CDN, no internet dependency. The force-directed graph, every chart and
-every table is hand-written, so it runs on a demo laptop with the wifi off.
+to execute the complete analysis pipeline.
+
+Generated artefacts are written to:
+
+```text
+outputs/
+```
 
 ---
 
-## The nine layers
+# Getting Started
 
-| # | Layer | Kind | Role | What it catches |
-|---|-------|------|------|-----------------|
-| L1 | Structuring / smurfing | rule | **primary** | Transfers sized just under the ₹10,00,000 CTR threshold; many-to-one funnels |
-| L2 | Fan-out → fan-in | graph | **primary** | Funds split across intermediaries that reconverge on one destination |
-| L3 | Circular flow | graph + time | **primary** | Money that round-trips to its origin, closing quickly and in order |
-| L4 | Pass-through conduit | temporal | **primary** | Receive and forward roughly the same amount within a day (the mule signature) |
-| L5 | Sub-network chokepoint | graph | corroborating | Betweenness *inside the suspicious sub-network*: which freeze fragments the operation |
-| L6 | Behavioural anomaly | ML | corroborating | IsolationForest over nine per-account features |
-| L7 | Suspicion propagation | graph | lead generation | Unflagged accounts exposed to confirmed alerts |
-| L8 | Laundering timeline | temporal | reconstruction | Placement → layering → integration attribution per transaction |
-| L9 | Threshold evasion | adaptive | **primary** | Relays that sit deliberately outside every published threshold |
+## Requirements
 
-L5 and L6 can only raise the score of an account a primary layer already flagged. An
-unsupervised anomaly score cannot be explained to a regulator, so it is not allowed to
-originate an STR. L7 sits outside the alerting pipeline entirely, so guilt-by-association
-can never inflate the precision figure.
+- Python 3.x
+- pip
 
-Risk score = 2 per primary typology + 1 per corroborating layer.
-≥4 CRITICAL · 3 HIGH · 2 MEDIUM · 1 LOW.
+## Installation
 
----
+```bash
+pip install -r requirements.txt
+```
 
-## Layer 9: catching a launderer who has read the rulebook
+## Start AMLTrace
 
-L1 to L4 are published rules, and every one of them has a number in it. This interface
-prints all of those numbers on the Detection Lab page. Anyone who can read them can sit
-just outside: space the hops of a loop wider than the span cap, size the deposits below
-the reporting band, hold the money a day longer than the conduit window, and give every
-mule a little unrelated trade so its dedication ratio never rises. Our own `redteam.py`
-builds exactly that ledger, and layers 1 to 8 score **recall 0.00** on it.
+```bash
+python app.py
+```
 
-L9 does not add another number to sit outside of. It scores three properties that follow
-from moving other people's money through other people's accounts, and that therefore
-survive the manoeuvre:
+Then open:
 
-| | Test | Why a launderer cannot drop it |
-|---|---|---|
-| **D1** | **Rhythm** | Trade between two businesses is irregular. Money walked along a relay arrives on a schedule, because someone is operating it. Evading a time window means committing to a rhythm. |
-| **D2** | **Conservation** | One sum keeping its size across several hops, distinct from what those accounts otherwise carry. Laundering has to move a particular amount from A to Z. |
-| **D3** | **Net exposure** | Cover traffic inflates gross volume until any dedication ratio falls below threshold. Netting each counterparty pair first removes the disguise, because money that comes straight back changes nothing. |
-
-Two of the three must agree, and every hop on the relay must be one-shot, before anything
-is flagged. That last test is what keeps an acquiring bank out of the queue: a standing
-settlement corridor is rhythmic and does conserve value, but it runs on the same rails
-every week.
-
-The structuring half of the layer works the same way. Rather than compiling India's
-₹10,00,000 CTR line into the detector, it reads the lowest round figure a run of tranches
-never crosses, so the same test works for a US $10,000 CTR or a EUR 10,000 cash ceiling
-with no code change. That also closes the "spread the deposits over a fortnight" evasion,
-which no time window can.
-
-### The benchmark
-
-Two ledgers built specifically to defeat this engine, each scored twice. The second is a
-**peeling chain**: a typology no layer here was written for, included to test whether L9
-generalises or has just been fitted to the first attack. Nothing in either was used to
-tune a threshold.
-
-| Adversarial ledger | Layers 1–8 | With L9 | Precision | FP |
-|---|---|---|---|---|
-| Threshold-evasive relay ring (6 accounts) | recall **0.00** | recall **1.00** | 1.00 | 0 |
-| Peeling chain, typology not implemented (8 accounts) | recall **0.00** | recall **1.00** | 1.00 | 0 |
-
-It costs nothing on the ordinary ledger: precision stays **1.00** across all ten seeds and
-none of the 19 lawful look-alikes is flagged. On the circularity probe in `audit.py`,
-which bends each typology toward the legitimate side, it lifts *structuring spread over
-12 days* from 0.83 to **1.00** and *cycles closing 3× slower* from 0.74 to **0.89**.
-
-Run it yourself: `GET /api/evasion`, the **Adversarial test** view, or the section in
-`python generate_report.py`.
+```text
+http://127.0.0.1:5000
+```
 
 ---
 
-## Hard negatives
+# Generate an Offline Report
 
-Any detector scores perfectly on data where only criminals form triangles. So the ledger
-contains **19 accounts of entirely lawful business, engineered to reproduce each typology's
-topology**. None is labelled fraud:
+The complete engine can also be run without starting the web application.
 
-| Lawful activity | Looks like | Why it is not a crime |
-|---|---|---|
-| Customer → 3 contractors → shared distributor | Fan-out / fan-in | The contractors have their own unrelated trade |
-| Merchant ↔ PSP ↔ acquirer settlement | Circular flow | A standing commercial relationship, repeated for months |
-| Escrow agent | Pass-through conduit | Openly does this with many counterparties |
-| Payroll bureau paid just under the CTR line | Structuring | Also sends sums *above* the line, so it is not avoiding it |
+```bash
+python generate_report.py
+```
 
-Four economic discriminators separate them: **threshold avoidance**, **branch dedication**,
-**standing relationship**, and **settlement-rail recurrence**. Turning each off in isolation:
+To analyse another CSV:
 
-| Configuration | Precision | Recall | FP | Look-alikes wrongly flagged |
-|---|---|---|---|---|
-| All discriminators on | **1.00** | 1.00 | 0 | **0 / 19** |
-| Without threshold avoidance (L1) | 0.95 | 1.00 | 2 | 2 / 19 |
-| Without branch dedication (L2) | 0.78 | 1.00 | 10 | 10 / 19 |
-| Without standing relationship (L3) | 0.85 | 1.00 | 6 | 6 / 19 |
-| Without settlement-rail recurrence (L4) | 0.95 | 1.00 | 2 | 2 / 19 |
-| **All off, pure shape matching** | **0.66** | 1.00 | 18 | **18 / 19** |
-
-A topology-only AML detector flags 18 of 19 legitimate businesses. That last row is the
-reason the discriminators exist.
+```bash
+python generate_report.py --csv your_dataset.csv --limit 50000
+```
 
 ---
 
-## Streaming replay
-
-The pipeline is re-run **each day on only the transactions seen so far**:
-
-- First alert possible: **day 3**
-- Detection lag: mean **4.23 days**, median 4, worst 17
-- All 35 laundering accounts eventually surface; none is missed
-
-And the uncomfortable part:
-
-> Batch scoring reports precision **1.00**. The same detector, run as a stream, spends its
-> first four days of alerting at precision **0.00**, is still at **0.68** on day 13, and
-> does not reach the batch figure until **day 22**.
-
-That gap is the cost of acting early rather than a defect. The discriminators are
-evidence-hungry: a settlement rail is indistinguishable from a money mule until you have
-watched it settle three times; a contractor looks like a dedicated conduit until its
-unrelated invoices arrive. Early in the window that history does not exist, so the first
-accounts the system names are lawful businesses, provisionally flagged and then correctly
-released as their ordinary trade arrives.
-
-A batch precision figure quoted on its own leaves this curve out.
-
----
-
-## Alert economics
-
-Detection quality is not the decision a bank makes; staffing is. Every threshold is a
-budget line, so the app costs the current configuration:
-
-- **0.32 analyst FTE**, ₹7.01 L a year at ₹1,200/hour on this book
-- **₹1,646** per alert · **₹9.25 L** of illicit flow surfaced per analyst hour
-- Conversion rate **100%** against a typical large-bank **~6%**, flagged in the UI as the
-  synthetic-data artefact it is
-
-The **threshold ↔ cost frontier** re-runs the pipeline across a range of settings: raising
-the fan-branch threshold from 3 to 4 saves ₹2.19 L a year and costs 40% of recall.
-
----
-
-## What the synthetic ledger is calibrated to
-
-Account-level Indian transaction data is not public and cannot be: customer records are
-protected by RBI regulation, by PMLA confidentiality and by the DPDP Act 2023. Every
-public AML dataset in existence is synthetic for that reason. So the ledger is invented,
-but the system it moves through is not. `india_calibration.py` pins each generator
-parameter to a published figure and records the source next to it:
-
-| Calibrated | Pinned to |
-|---|---|
-| Channel mix across NEFT / RTGS / IMPS / UPI | RBI Payment Systems Report, NPCI UPI statistics |
-| Average ticket size per rail | RBI Payment Systems Report |
-| CTR threshold ₹10,00,000 | PML (Maintenance of Records) Rules, 2005, Rule 3 |
-| RTGS ₹2,00,000 floor and per-rail ceilings | RBI RTGS System Regulations, NPCI circulars |
-| Institution codes | real IFSC prefixes, synthetic account numbers |
-| Operating rhythm, and how laundering skews off-hours | FATF typologies |
-
-Accounts, counterparties and rings are invented; no real person, account or institution is
-represented. `GET /api/export/provenance.json` returns every parameter with its source,
-alongside the mix the generated ledger actually exhibits, so the calibration can be checked
-rather than taken on trust.
-
----
-
-## Public dataset adapters
-
-Raw exports are auto-detected from their column signature, with no reformatting:
-
-| Key | Dataset |
-|---|---|
-| `ibm_aml` | IBM Transactions for Anti Money Laundering (Kaggle) |
-| `paysim` | PaySim mobile money (Kaggle) |
-| `amlsim` | IBM AMLSim generator output |
-| `elliptic` | Elliptic Bitcoin transaction graph |
-| `generic` | `sender, receiver, amount` + optional `day`/`timestamp`, `channel`, `is_fraud` |
-
-Drop a file into the Detection Lab, or `--csv <file> --limit N`. The datasets themselves
-are large and separately licensed, so they are **not bundled**; `samples/` contains
-schema-faithful files that verify each adapter parses. Those samples are random graphs
-with random labels, and the detector correctly raises **zero alerts** on them: a negative
-control showing it does not invent patterns in noise.
-
----
-
-## Results on the bundled ledger
-
-187 accounts (35 fraud-linked, 19 lawful look-alikes, 133 ordinary) · 301 transactions worth ₹10.72 Cr.
-
-| Configuration | Precision | Recall | F1 | FP |
-|---|---|---|---|---|
-| L1 structuring only | 1.00 | 0.17 | 0.29 | 0 |
-| + L2 fan patterns | 1.00 | 0.60 | 0.75 | 0 |
-| + L3 cycles | 1.00 | 0.94 | 0.97 | 0 |
-| + L4 pass-through (all rules) | 1.00 | 1.00 | 1.00 | 0 |
-| + L9 evasion-adaptive | 1.00 | 1.00 | 1.00 | 0 |
-| + L5/L6 corroboration (full) | **1.00** | **1.00** | **1.00** | **0** |
-| *ML alone, no graph context* | *0.35* | *0.17* | *0.23* | *11* |
-
-Robustness: mean Jaccard **0.97** across 16 independent threshold perturbations.
-9 rings detected, from the **detected** alert sub-network and never from the labels.
-
-The bundled data contains one deliberate bridge: a fan-in consolidation account that
-immediately wires into a mule chain. Nothing tells the detector they are related. It
-merges the fan ring and the mule chain into a single seven-account RING-01 on its own,
-and the consolidation account is the highest-scoring in the case at 5, because three
-independent layers converge on it: fan-in, pass-through and sub-network chokepoint.
-
-### Reproducibility
-
-A ring identifier is cited in the alert queue, in the exports and in every STR dossier,
-so it has to mean the same thing tomorrow as it did today. Nothing in the pipeline is
-ordered by set iteration or by traversal order, and the one stochastic model is seeded,
-so `python generate_report.py` twice produces all 25 files in `outputs/` byte for byte
-identical, the network PNG and the Excel workbook included, in separate processes and
-under different values of `PYTHONHASHSEED`. The workbook needed help: an `.xlsx` is a zip,
-and both its member timestamps and its `docProps` modified date come from the clock rather
-than the data, so it is rewritten with the ledger's epoch on every member before it is
-saved.
-
----
-
-## Views
-
-Overview · Alert queue · Network · Timeline · **Replay** · Rings · Propagation ·
-**Data provenance** · STR dossier · Model evidence · **Adversarial test** ·
-**Alert economics** · Detection lab · Exports
-
----
-
-## API
+# API
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /api/state` | Entire application state |
-| `POST /api/simulate` | Regenerate the ledger (seed, size) and analyse |
-| `POST /api/reconfigure` | Re-run detection on the current ledger with new thresholds |
-| `POST /api/upload` | Analyse an uploaded CSV; schema auto-detected |
-| `GET /api/replay` | Day-by-day re-detection and latency (cached) |
-| `GET /api/evasion` | Adversarial benchmark: two ledgers built to defeat the engine's own rules |
-| `POST /api/economics` | Recost the alert population under new staffing assumptions |
-| `GET /api/schemas` | Supported public dataset schemas |
-| `GET /api/dossier/<account>` | STR dossier as JSON |
-| `GET /api/subgraph/<account>?hops=n` | n-hop neighbourhood |
-| `GET /api/export/provenance.json` | Calibration sources, and observed vs published channel mix |
-| `GET /api/export/*.csv`, `/api/export/metrics.json` | All exports |
+| `GET /api/state` | Complete application state |
+| `POST /api/simulate` | Generate and analyse a ledger |
+| `POST /api/reconfigure` | Re-run detection with different thresholds |
+| `POST /api/upload` | Analyse an uploaded CSV |
+| `GET /api/replay` | Day-by-day detection replay |
+| `GET /api/evasion` | Adversarial benchmark |
+| `POST /api/economics` | Alert economics analysis |
+| `GET /api/schemas` | Supported dataset schemas |
+| `GET /api/dossier/<account>` | STR investigation dossier |
+| `GET /api/subgraph/<account>?hops=n` | Account neighbourhood |
+| `GET /api/export/provenance.json` | Calibration provenance |
+| `GET /api/export/*.csv` | Data exports |
+| `GET /api/export/metrics.json` | Detection metrics |
 
 ---
 
-## Files
+# Repository Structure
 
+```text
+AMLTrace/
+│
+├── deck/
+├── outputs/
+├── samples/
+├── static/
+│
+├── .gitignore
+├── API.md
+├── ARCHITECTURE.md
+├── DATASETS.md
+├── README.md
+│
+├── aml_engine.py
+├── app.py
+├── audit.py
+├── dataset_adapters.py
+├── generate_report.py
+├── india_calibration.py
+├── redteam.py
+│
+├── requirements.txt
+├── run.bat
+├── run.sh
+└── sample_ledger.csv
 ```
-aml_engine.py        detection engine; pure library, no I/O, no globals
-india_calibration.py published Indian figures the ledger is calibrated to, with sources
-dataset_adapters.py  public AML dataset schema detection and translation
-app.py               Flask API + static hosting
-generate_report.py   headless run; writes outputs/ (CSVs, STRs, PNG, metrics)
-audit.py             self-audit: ledger/graph integrity, deck sync, seed stability,
-                     circularity probe, label audit
-redteam.py           attacks the system the way a hostile reviewer would
-static/              index.html · styles.css · app.js  (zero dependencies)
-samples/             schema-faithful files that exercise each adapter
-deck/                pitch deck, its charts, and the scripts that build both
-sample_ledger.csv    tiny generic-schema ledger for smoke-testing upload
-run.sh / run.bat     install requirements, then start the app
-```
 
-## Further reading
+### Core Modules
 
-| Document | Contents |
+| File | Purpose |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Module boundaries, the pipeline in detail, why the engine is a pure library |
-| [API.md](API.md) | Every endpoint, request and response shape, and all tunables |
-| [DATASETS.md](DATASETS.md) | The canonical ledger, each public-dataset adapter, bringing your own CSV |
+| `aml_engine.py` | Core AML detection engine |
+| `india_calibration.py` | Indian financial-system calibration |
+| `dataset_adapters.py` | Public AML dataset schema detection |
+| `app.py` | Flask API and application hosting |
+| `generate_report.py` | Headless analysis and report generation |
+| `audit.py` | Self-audit and validation |
+| `redteam.py` | Adversarial testing |
 
 ---
 
-## Regulatory basis
+# Validation
 
-CTR threshold ₹10,00,000 under the PML (Maintenance of Records) Rules, 2005. STRs are
-pattern-based with no amount floor, filed under Section 12 of the Prevention of
-Money-Laundering Act, 2002 read with Rule 3, and reported to FIU-IND. Generated dossiers
-follow that structure (Parts A–F).
+AMLTrace includes validation and self-audit tooling covering:
 
-All data in this prototype is synthetic. No real customer information is used.
+- Ledger and graph integrity
+- Detection consistency
+- Seed stability
+- Circularity testing
+- Label auditing
+- Adversarial testing
+- Threshold perturbation
+- Reproducibility
+
+Run the relevant validation scripts from the repository to reproduce the reported results.
+
+---
+
+# Security & Data
+
+- All bundled transaction data is synthetic.
+- No real customer information is included.
+- API credentials are not required for the core local prototype.
+- Generated outputs contain synthetic account and transaction information.
+- Dataset adapters are designed to operate on structured transaction data.
+
+---
+
+# Limitations
+
+AMLTrace is a **hackathon prototype**, not a production AML compliance system.
+
+Current limitations include:
+
+- The bundled transaction ledger is synthetic.
+- Real-world AML systems operate on substantially larger and more heterogeneous datasets.
+- Production deployment would require institution-specific calibration and validation.
+- Regulatory reporting requires appropriate human review and institutional controls.
+- Synthetic-data performance should not be interpreted as production-level detection performance.
+- Detection thresholds and behavioural assumptions would require validation against real institutional data.
+
+---
+
+# Future Vision
+
+AMLTrace is designed as a foundation for a broader financial-crime investigation platform.
+
+Potential future directions include:
+
+- Real-time transaction-stream processing
+- Institution-specific model calibration
+- Larger multi-bank transaction graphs
+- Cross-institution network analysis
+- Continuous behavioural profiling
+- Investigator feedback loops
+- Case management and collaboration
+- Automated evidence collection
+- Human-in-the-loop alert disposition
+- Production-scale deployment
+
+The long-term objective is to move AML systems from **alert generation** toward **continuous financial-network investigation**.
+
+---
+
+# Team
+
+## Team Name
+
+**Broke Detectives**
+
+### Team Members
+
+| Member | Contribution |
+|---|---|
+| **Ujjwal Verma** | Ideation, problem analysis, solution design and product direction |
+| **Varun Agarwal** | Ideation, AML workflow design, feature planning and validation |
+| **Shubh Singh** | Ideation, research, testing and product refinement |
+
+### Team Contribution
+
+The team collectively contributed to **problem understanding, ideation, AML domain research, solution design, feature definition, investigation workflow design, testing, validation, and product refinement**.
+
+The prototype was developed through an **AI-assisted development workflow**, with the team directing the product requirements, architecture, behaviour, testing, and final refinement.
+
+---
+
+# Acknowledgements
+
+AMLTrace was developed as a prototype for **Build $ Bank at IGDTUW**.
+
+The project uses publicly available AML, financial-system, and regulatory information to calibrate its synthetic demonstration data.
+
+---
+
+# Current Scope
+
+AMLTrace currently focuses on one central problem:
+
+> **How can financial institutions move from a suspicious transaction alert to an understandable investigation of the network behind it?**
+
+The current prototype demonstrates this through:
+
+**Transaction Data → Detection → Network → Timeline → Evidence → Investigation → STR Dossier**
+
+---
+
+# Final Thought
+
+> **Don't just flag the transaction. Trace the money.**
+
+**AMLTrace**
+
+**Build $ Bank · IGDTUW**
