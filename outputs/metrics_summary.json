@@ -1,0 +1,469 @@
+{
+  "generated": "2026-09-10",
+  "dataset": {
+    "accounts": 187,
+    "transactions": 301,
+    "total_value": 107151277,
+    "days": 30,
+    "labelled": true,
+    "fraud_linked_accounts": 35,
+    "decoy_accounts": 19,
+    "epoch": "2026-08-01"
+  },
+  "summary": {
+    "flagged": 35,
+    "tiers": {
+      "CRITICAL": 10,
+      "HIGH": 1,
+      "MEDIUM": 24,
+      "LOW": 0
+    },
+    "rings": 9,
+    "modularity": 0.1241,
+    "exposure": 54590319,
+    "illicit_flow": 44391379,
+    "illicit_share": 0.4143,
+    "layer_counts": {
+      "ADAPTIVE": 6,
+      "ML-ANOMALY": 6,
+      "STRUCTURING": 6,
+      "FAN": 15,
+      "CENTRALITY": 2,
+      "PASS-THROUGH": 6,
+      "CYCLE": 12
+    },
+    "watchlist": 25
+  },
+  "metrics": {
+    "labelled": true,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 35,
+    "fp": 0,
+    "fn": 0,
+    "tn": 152,
+    "false_positives": [],
+    "false_negatives": []
+  },
+  "ablation": [
+    {
+      "name": "L1 Structuring only",
+      "precision": 1.0,
+      "recall": 0.17142857142857143,
+      "f1": 0.2926829268292683,
+      "tp": 6,
+      "fp": 0,
+      "fn": 29,
+      "flagged": 6
+    },
+    {
+      "name": "+ L2 Fan patterns",
+      "precision": 1.0,
+      "recall": 0.6,
+      "f1": 0.75,
+      "tp": 21,
+      "fp": 0,
+      "fn": 14,
+      "flagged": 21
+    },
+    {
+      "name": "+ L3 Cycles",
+      "precision": 1.0,
+      "recall": 0.9428571428571428,
+      "f1": 0.9705882352941176,
+      "tp": 33,
+      "fp": 0,
+      "fn": 2,
+      "flagged": 33
+    },
+    {
+      "name": "+ L4 Pass-through (all rules)",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L9 Evasion-adaptive",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L5 Centrality",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L6 ML corroboration (full)",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "ML alone, no graph context (baseline)",
+      "precision": 0.35294117647058826,
+      "recall": 0.17142857142857143,
+      "f1": 0.23076923076923078,
+      "tp": 6,
+      "fp": 11,
+      "fn": 29,
+      "flagged": 17
+    }
+  ],
+  "robustness": {
+    "perturbations": [
+      {
+        "name": "ML cutoff -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "ML cutoff +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Centrality z -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Centrality z +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Structuring window -1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Structuring window +1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Pass-through window +1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Fan min branches +1",
+        "jaccard": 0.6,
+        "flagged": 21
+      },
+      {
+        "name": "Cycle span slack +2",
+        "jaccard": 0.921,
+        "flagged": 38
+      },
+      {
+        "name": "Cycle monotonicity off",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion rhythm -25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion rhythm +25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion net dedication -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion net dedication +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion conservation +25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Inferred line hug -10%",
+        "jaccard": 1.0,
+        "flagged": 35
+      }
+    ],
+    "mean_jaccard": 0.97
+  },
+  "hard_negatives": {
+    "present": true,
+    "total": 19,
+    "caught": 0,
+    "discrimination": 1.0,
+    "families": [
+      {
+        "family": "Card settlement (cycle shape)",
+        "accounts": 6,
+        "caught": 0,
+        "survived": 6,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Escrow agent (pass-through shape)",
+        "accounts": 1,
+        "caught": 0,
+        "survived": 1,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Payroll bureau (structuring shape)",
+        "accounts": 2,
+        "caught": 0,
+        "survived": 2,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Supply chain (fan shape)",
+        "accounts": 10,
+        "caught": 0,
+        "survived": 10,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      }
+    ],
+    "share_of_false_positives": 0.0,
+    "note": "Every account above is lawful. Each family is engineered to reproduce the topology of one typology, so anything caught here is a detector matching shape without understanding purpose."
+  },
+  "discriminator_ablation": [
+    {
+      "name": "All discriminators on (baseline)",
+      "why": "",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Threshold avoidance (L1)",
+      "why": "Without it, a payroll bureau paid just under the CTR line looks like structuring.",
+      "precision": 0.9459459459459459,
+      "recall": 1.0,
+      "f1": 0.9722222222222222,
+      "fp": 2,
+      "decoys_caught": 2,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Branch dedication (L2)",
+      "why": "Without it, any customer paying three contractors who share a supplier is a fan-out ring.",
+      "precision": 0.7777777777777778,
+      "recall": 1.0,
+      "f1": 0.875,
+      "fp": 10,
+      "decoys_caught": 10,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Standing relationship (L3)",
+      "why": "Without it, ordinary card settlement between merchant, PSP and acquirer is a laundering loop.",
+      "precision": 0.8536585365853658,
+      "recall": 1.0,
+      "f1": 0.9210526315789473,
+      "fp": 6,
+      "decoys_caught": 6,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Settlement-rail recurrence (L4)",
+      "why": "Without it, an escrow agent or acquiring bank is indistinguishable from a money mule.",
+      "precision": 0.9459459459459459,
+      "recall": 1.0,
+      "f1": 0.9722222222222222,
+      "fp": 2,
+      "decoys_caught": 2,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: One-shot corridor (L9)",
+      "why": "Without it, every recurring settlement relay reads as a threshold-evasive relay chain.",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Inferred reporting line (L9)",
+      "why": "Without it, any account paying the same counterparty repeatedly looks like slow structuring.",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "All discriminators off (shape matching only)",
+      "why": "This is what a topology-only AML detector actually scores.",
+      "precision": 0.660377358490566,
+      "recall": 1.0,
+      "f1": 0.7954545454545454,
+      "fp": 18,
+      "decoys_caught": 18,
+      "decoys_total": 19
+    }
+  ],
+  "economics": {
+    "assumptions": {
+      "analyst_cost_per_hour": 1200,
+      "review_minutes_by_tier": {
+        "CRITICAL": 240,
+        "HIGH": 120,
+        "MEDIUM": 45,
+        "LOW": 10
+      },
+      "observation_days": 30,
+      "portfolio_multiplier": 1,
+      "productive_hours_per_fte_year": 1800
+    },
+    "alerts_per_day": 1.17,
+    "alerts_per_year": 426,
+    "review_hours_window": 60.0,
+    "review_hours_year": 730,
+    "analyst_fte": 0.41,
+    "annual_review_cost": 876000,
+    "value_at_risk": 54590319,
+    "illicit_flow_surfaced": 44391379,
+    "return_per_analyst_hour": 739856,
+    "cost_per_alert": 2057,
+    "false_positive_burden": {
+      "false_positives": 0,
+      "wasted_hours_window": 0.0,
+      "wasted_cost_year": 0,
+      "share_of_review_effort": 0.0
+    },
+    "conversion_rate": 1.0,
+    "industry_comparison": {
+      "typical_bank_conversion": 0.06,
+      "note": "Large banks typically convert 4-10% of AML alerts into a filed report. Anything far above that is either a better detector or an easier book of business - on synthetic data, assume the latter until proven otherwise."
+    },
+    "missed": {
+      "accounts": 0,
+      "note": "Undetected accounts carry unquantified risk; recall is the expensive metric."
+    }
+  },
+  "evasion_benchmark": [
+    {
+      "scenario": "Threshold-evasive relay ring",
+      "note": "Six accounts moving one sum in a loop, every parameter placed outside the published thresholds and every member given reciprocal cover traffic.",
+      "criminal_accounts": 6,
+      "recall_without_adaptive": 0.0,
+      "recall_with_adaptive": 1.0,
+      "precision_with_adaptive": 1.0,
+      "caught_without": 0,
+      "caught_with": 6,
+      "false_positives_with": 0
+    },
+    {
+      "scenario": "Peeling chain (typology not implemented)",
+      "note": "A sum walking a line of accounts, shedding a slice to a fresh beneficiary at each hop. No layer in this engine was written for this shape.",
+      "criminal_accounts": 8,
+      "recall_without_adaptive": 0.0,
+      "recall_with_adaptive": 1.0,
+      "precision_with_adaptive": 1.0,
+      "caught_without": 0,
+      "caught_with": 8,
+      "false_positives_with": 0
+    }
+  ],
+  "replay_summary": {
+    "mean_latency_days": 4.23,
+    "median_latency_days": 4.0,
+    "worst_latency_days": 17,
+    "first_alert_day": 3,
+    "detected": 35,
+    "never_detected": 0
+  },
+  "config": {
+    "structuring_floor_pct": 0.85,
+    "structuring_min_count": 4,
+    "structuring_window_days": 5,
+    "smurf_min_senders": 3,
+    "structuring_require_avoidance": true,
+    "structuring_min_crossers": 2,
+    "structuring_crosser_share": 0.25,
+    "agg_min_count": 5,
+    "agg_window_days": 7,
+    "fan_min_branches": 3,
+    "fan_min_dedication": 0.75,
+    "fan_max_retention": 0.6,
+    "fan_max_inflation": 2.0,
+    "cycle_max_len": 6,
+    "cycle_max_span_slack": 3,
+    "cycle_require_monotone": true,
+    "cycle_max_edge_count": 2,
+    "cycle_min_conservation": 0.25,
+    "pt_ratio_low": 0.93,
+    "pt_ratio_high": 1.0,
+    "pt_window_days": 1,
+    "pt_min_amount": 250000,
+    "pt_max_counterparties": 4,
+    "pt_max_repeats": 2,
+    "pt_rail_span_days": 7,
+    "adaptive_min_hops": 3,
+    "adaptive_hop_low": 0.6,
+    "adaptive_hop_high": 1.05,
+    "adaptive_min_conservation": 0.35,
+    "adaptive_rhythm_cv": 0.3,
+    "adaptive_amount_cv": 0.3,
+    "adaptive_net_dedication": 0.6,
+    "adaptive_max_edge_count": 2,
+    "adaptive_min_amount": 100000,
+    "adaptive_agg_min_count": 5,
+    "adaptive_agg_amount_cv": 0.35,
+    "adaptive_agg_hug": 0.75,
+    "adaptive_agg_multiple": 2.0,
+    "centrality_z": 2.0,
+    "ml_cutoff": -0.05,
+    "ml_confirming_only": true,
+    "prop_alpha": 0.85,
+    "prop_max_hops": 3,
+    "prop_decay": 0.45,
+    "use_structuring": true,
+    "use_fan": true,
+    "use_cycles": true,
+    "use_pass_through": true,
+    "use_adaptive": true,
+    "use_centrality": true,
+    "use_ml": true
+  },
+  "key_finding": "Unsupervised anomaly detection alone is a weak AML control. Relational structure carries the signal; ML corroborates."
+}

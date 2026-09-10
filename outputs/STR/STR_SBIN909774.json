@@ -1,0 +1,130 @@
+{
+  "report_type": "SUSPICIOUS TRANSACTION REPORT (STR)",
+  "regulatory_basis": "Section 12, Prevention of Money-Laundering Act, 2002 r/w Rule 3, PML (Maintenance of Records) Rules, 2005 - reported to FIU-IND",
+  "report_reference": "STR/AMLT/2026/SBIN909774",
+  "reporting_entity": "AMLTrace Analytics - prototype reporting entity",
+  "date_of_report": "2026-09-10",
+  "account_id": "SBIN909774",
+  "risk_score": 4,
+  "risk_tier": "CRITICAL",
+  "recommended_action": "Freeze review by senior compliance officer; file STR within 7 days",
+  "sla": "T+0",
+  "ctr_threshold_applied": 1000000,
+  "narrative": "Account SBIN909774 has been assessed as CRITICAL risk. Over the observation window it received Rs 506,285 and disbursed Rs 505,492. The account was surfaced by 2 independent detection layer(s) evidencing circular flow, pass-through conduit. The account does not act alone: it is one of 3 accounts in RING-09, alongside HDFC300599, HDFC574140, moving Rs 1,557,210 between themselves. Taken together the transaction pattern has no apparent lawful or economic purpose and is consistent with the placement and layering of proceeds of crime. A Suspicious Transaction Report is warranted under Section 12 of the Prevention of Money-Laundering Act, 2002 read with Rule 3 of the PML (Maintenance of Records) Rules, 2005.",
+  "grounds_of_suspicion": [
+    {
+      "layer": "CYCLE",
+      "layer_label": "Circular flow",
+      "role": "primary",
+      "detail": "Member of a closed 3-hop loop carrying Rs 1,557,210, closed in 2 day(s): HDFC300599 -> HDFC574140 -> SBIN909774 -> HDFC300599. Hops are chronologically ordered and 93% of value is conserved around the loop, so the money genuinely round-tripped. Funds return to their origin, so no net economic value is exchanged - the only product of the loop is transaction history.",
+      "evidence": [
+        "HDFC300599->HDFC574140",
+        "HDFC574140->SBIN909774",
+        "SBIN909774->HDFC300599"
+      ]
+    },
+    {
+      "layer": "PASS-THROUGH",
+      "layer_label": "Pass-through conduit",
+      "role": "primary",
+      "detail": "Received Rs 506,285 from HDFC574140 on day 6 and forwarded Rs 505,492 to HDFC300599 on day 7 - 99.8% passed on, 0.2% skimmed, held 1 day(s). The account stores no value; it is a conduit, which is the defining signature of a money mule. It is not a settlement rail: the behaviour occurs 1 time(s), not on a recurring schedule.",
+      "evidence": [
+        "TXN00184",
+        "TXN00185"
+      ]
+    }
+  ],
+  "transaction_summary": {
+    "total_inflow": 506285,
+    "total_outflow": 505492,
+    "net_position": 793,
+    "transaction_count": 2,
+    "counterparties": 3,
+    "first_activity_day": 6,
+    "last_activity_day": 7,
+    "credits_just_below_ctr": 0
+  },
+  "behavioural_z_scores": {
+    "out_count": -0.523,
+    "in_count": -0.422,
+    "total_sent": -0.052,
+    "total_received": -0.051,
+    "sent_std": -0.35,
+    "unique_out_counterparties": -0.46,
+    "unique_in_counterparties": -0.335,
+    "amount_below_ctr_ratio": -0.243,
+    "median_hold_days": -1.632
+  },
+  "betweenness_centrality": 0.000505,
+  "ml_anomaly_score": 0.1203,
+  "associated_ring": {
+    "ring_id": "RING-09",
+    "typology": "Circular flow",
+    "members": [
+      "HDFC300599",
+      "HDFC574140",
+      "SBIN909774"
+    ],
+    "internal_value": 1557210
+  },
+  "one_hop_subgraph": {
+    "nodes": [
+      {
+        "id": "HDFC300599",
+        "risk": 2,
+        "tier": "MEDIUM"
+      },
+      {
+        "id": "HDFC574140",
+        "risk": 2,
+        "tier": "MEDIUM"
+      },
+      {
+        "id": "SBIN909774",
+        "risk": 4,
+        "tier": "CRITICAL"
+      }
+    ],
+    "edges": [
+      {
+        "source": "HDFC300599",
+        "target": "HDFC574140",
+        "amount": 545433,
+        "count": 1
+      },
+      {
+        "source": "HDFC574140",
+        "target": "SBIN909774",
+        "amount": 506285,
+        "count": 1
+      },
+      {
+        "source": "SBIN909774",
+        "target": "HDFC300599",
+        "amount": 505492,
+        "count": 1
+      }
+    ]
+  },
+  "transactions": [
+    {
+      "txn_id": "TXN00184",
+      "date": "2026-08-06",
+      "day": 6,
+      "direction": "CREDIT",
+      "counterparty": "HDFC574140",
+      "amount": 506285,
+      "channel": "NEFT"
+    },
+    {
+      "txn_id": "TXN00185",
+      "date": "2026-08-07",
+      "day": 7,
+      "direction": "DEBIT",
+      "counterparty": "HDFC300599",
+      "amount": 505492,
+      "channel": "NEFT"
+    }
+  ],
+  "action_taken": "Sub-network temporary hold recommended; account and its one-hop neighbourhood quarantined pending FIU-IND acknowledgement."
+}

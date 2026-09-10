@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMLTrace - Tracing Financial Crime Across Patterns</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🕵️</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="sky"><div class="lyr l1"></div><div class="lyr l2"></div><div class="lyr l3"></div></div>
+<canvas id="stars"></canvas>
+
+<div class="loading" id="loading"><div class="spin"></div><div id="loadmsg">Running detection pipeline…</div></div>
+
+<div id="app">
+  <aside>
+    <div class="brand">
+      <h1><span class="dot"></span>AMLTrace</h1>
+      <small>FIU-IND · PMLA 2002</small>
+    </div>
+    <nav id="nav">
+      <button data-v="overview" class="on"><span class="ico">◎</span>Overview</button>
+      <button data-v="alerts"><span class="ico">▲</span>Alert queue<span class="tag" id="tagAlerts">–</span></button>
+      <button data-v="network"><span class="ico">⬡</span>Network</button>
+      <button data-v="timeline"><span class="ico">⧗</span>Timeline</button>
+      <button data-v="replay"><span class="ico">▶</span>Replay<span class="tag" id="tagLatency">–</span></button>
+      <button data-v="rings"><span class="ico">◍</span>Rings<span class="tag" id="tagRings">–</span></button>
+      <button data-v="propagation"><span class="ico">⤳</span>Propagation<span class="tag" id="tagWatch">–</span></button>
+      <button data-v="dossier"><span class="ico">▤</span>STR dossier</button>
+      <button data-v="model"><span class="ico">◧</span>Model evidence</button>
+      <button data-v="adversary"><span class="ico">⚔</span>Adversarial test<span class="tag" id="tagAdv">–</span></button>
+      <button data-v="economics"><span class="ico">₹</span>Alert economics</button>
+      <button data-v="lab"><span class="ico">⚙</span>Detection lab</button>
+      <button data-v="provenance"><span class="ico">⌘</span>Data provenance</button>
+      <button data-v="exports"><span class="ico">⤓</span>Exports</button>
+    </nav>
+    <div class="sidefoot">
+      <button id="soundBtn" class="sndbtn" type="button" aria-pressed="true"
+              title="Interface sounds are on. Click to mute.">🔊 Sound on</button>
+      Prototype reporting entity.<br>Synthetic ledger - no real customer data.
+    </div>
+  </aside>
+
+  <main id="main">
+
+    <!-- ======================================================= OVERVIEW -->
+    <section class="view on" id="v-overview">
+      <div id="hero">
+        <canvas id="heroCanvas"></canvas>
+        <div>
+          <h1>Tracing financial crime<br>across patterns</h1>
+          <p>Nine detection layers over a directed money-flow graph. Rules and topology raise the
+             alert; machine learning only corroborates it; economic tests decide whether a
+             suspicious <em>shape</em> is actually a crime. The ninth layer catches the launderer
+             who has read the other eight.</p>
+          <div class="tags" id="heroTags"></div>
+        </div>
+      </div>
+
+      <div class="vhead">
+        <div>
+          <h2>Case overview</h2>
+          <p>Nine detection layers over a directed transaction graph. Rules and graph topology raise alerts;
+             machine learning and centrality only corroborate them - never originate them.</p>
+        </div>
+      </div>
+      <div id="warnBanner"></div>
+      <div class="grid kpis" id="kpis"></div>
+
+      <div class="grid" style="grid-template-columns:1.15fr .85fr;margin-top:14px" id="ovRow1">
+        <div class="card">
+          <h3>Detection layer contribution</h3>
+          <p class="sub">How many alerted accounts each layer independently evidences. Overlap is the point:
+             convergent independent evidence is what makes an STR defensible.</p>
+          <div id="layerBars"></div>
+        </div>
+        <div class="card">
+          <h3>Alert triage by risk tier</h3>
+          <p class="sub">Scoring: 2 points per primary typology, 1 per corroborating layer.</p>
+          <div class="piewrap"><div id="tierChart"></div><div class="pielegend" id="tierRows"></div></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div class="card">
+          <h3>Money-laundering stage attribution</h3>
+          <p class="sub">Every illicit transaction is assigned to a stage of the placement → layering →
+             integration cycle, so the case reads as a story rather than a list.</p>
+          <div class="piewrap"><div id="stagePie"></div><div class="pielegend" id="stageLegend"></div></div>
+          <div id="stageBars" style="margin-top:14px"></div>
+        </div>
+        <div class="card">
+          <h3>What the system concluded</h3>
+          <p class="sub">Auto-generated case narrative</p>
+          <div id="caseNarrative" style="font-size:13px;line-height:1.7"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= ALERTS -->
+    <section class="view" id="v-alerts">
+      <div class="vhead">
+        <div><h2>Alert queue</h2>
+        <p>Every row is an account an analyst must action, ordered by risk. Click a row for the full
+           grounds of suspicion and a one-click STR.</p></div>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="alertSearch" placeholder="Search account, typology, ring…" style="min-width:250px">
+        <select id="alertTier"><option value="">All tiers</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select>
+        <select id="alertLayer"><option value="">All layers</option></select>
+        <span class="spacer"></span>
+        <span class="faint" id="alertCount"></span>
+        <a class="btn" href="/api/export/alerts.csv">⤓ CSV</a>
+      </div>
+      <div class="grid" style="grid-template-columns:1.25fr .75fr">
+        <div class="tbl-wrap" style="max-height:620px">
+          <table id="alertTable">
+            <thead><tr>
+              <th data-s="account">Account</th><th data-s="risk_score">Risk</th><th data-s="typology">Typology</th>
+              <th data-s="ring">Ring</th><th data-s="exposure" class="num">Exposure</th>
+              <th data-s="txn_count" class="num">Txns</th><th data-s="sla">SLA</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="alertDetail" class="card" style="align-self:start;position:sticky;top:0">
+          <div class="empty">Select an alert to inspect the evidence.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== NETWORK -->
+    <section class="view" id="v-network">
+      <div class="vhead">
+        <div><h2>Transaction network</h2>
+        <p>Force-directed graph of the whole ledger, rendered from scratch on canvas. Drag to pan,
+           scroll to zoom, click a node to isolate its neighbourhood, drag a node to pin it.</p></div>
+      </div>
+      <div class="netwrap">
+        <canvas id="net"></canvas>
+        <div class="netbar">
+          <select id="netFilter">
+            <option value="context">Alerts + counterparties</option>
+            <option value="alerts">Alerted accounts only</option>
+            <option value="all">Entire ledger</option>
+          </select>
+          <button class="btn" id="net3d">◈ 3D</button>
+          <button class="btn" id="netStages">▤ Stage planes</button>
+          <button class="btn" id="netSpin">⟳ Spin</button>
+          <button class="btn" id="netReheat">↻ Re-layout</button>
+          <button class="btn" id="netFit">⤢ Fit</button>
+          <button class="btn" id="netClear">✕ Clear focus</button>
+          <label class="sw"><input type="checkbox" id="netLabels" checked> labels</label>
+          <label class="sw"><input type="checkbox" id="netAmounts"> amounts</label>
+          <span class="chip" id="netStat"></span>
+        </div>
+        <div class="netlegend">
+          <div><i style="background:#ff4d6d"></i>Critical</div>
+          <div><i style="background:#ff9f43"></i>High</div>
+          <div><i style="background:#ffd93d"></i>Medium</div>
+          <div><i style="background:#3a4a63"></i>Not alerted</div>
+          <div style="margin-top:6px;color:#6a7fa6">Node size ∝ value moved</div>
+          <div style="color:#6a7fa6" id="legend3d"></div>
+        </div>
+        <div class="tip" id="netTip"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================= TIMELINE -->
+    <section class="view" id="v-timeline">
+      <div class="vhead">
+        <div><h2>Laundering timeline</h2>
+        <p>The case reconstructed in time. Each illicit transaction is attributed to a stage of the
+           laundering cycle, so you can see money enter the banking channel, get layered, and exit.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/export/timeline.csv">⤓ Timeline CSV</a>
+      </div>
+
+      <div class="card">
+        <h3>Daily illicit flow by stage</h3>
+        <p class="sub">Bars: value moved that day, split by stage. Line: cumulative illicit value.
+           Click a day to filter the event stream below.</p>
+        <svg class="tlchart" id="tlChart"></svg>
+        <div class="stagekey">
+          <span><i style="background:var(--placement)"></i>Placement - entry into the banking channel</span>
+          <span><i style="background:var(--layering)"></i>Layering - movement to obscure origin</span>
+          <span><i style="background:var(--integration)"></i>Integration - exit into apparent legitimacy</span>
+          <span><i style="background:#63769a"></i>Cumulative</span>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div class="card">
+          <h3>Laundering episodes</h3>
+          <p class="sub">Each detected ring reconstructed as an episode with duration, velocity and
+             how long funds rested before moving on.</p>
+          <div id="episodes"></div>
+        </div>
+        <div class="card">
+          <h3>Event stream <span class="faint mono" id="evFilterLabel"></span></h3>
+          <p class="sub">Chronological illicit transaction ledger.</p>
+          <div class="toolbar" style="margin-bottom:6px">
+            <select id="evRing"><option value="">All rings</option></select>
+            <select id="evStage"><option value="">All stages</option><option>PLACEMENT</option><option>LAYERING</option><option>INTEGRATION</option></select>
+            <button class="btn" id="evReset">Reset</button>
+          </div>
+          <div id="eventStream" style="max-height:430px;overflow:auto"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= REPLAY -->
+    <section class="view" id="v-replay">
+      <div class="vhead">
+        <div><h2>Streaming replay</h2>
+        <p>Batch-scoring a closed month flatters every AML system ever built. This re-runs all
+           every layer each day on <em>only the transactions seen so far</em>, so you can watch
+           alerts fire as the money actually moves - and measure how many days late each one was.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/export/replay.csv">⤓ Replay CSV</a>
+        <a class="btn" href="/api/export/latency.csv">⤓ Latency CSV</a>
+      </div>
+
+      <div class="grid kpis" id="replayKpis"></div>
+
+      <div class="card" style="margin-top:14px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <h3 style="margin:0">Alerts as the ledger arrives</h3>
+          <span class="spacer"></span>
+          <button class="btn primary" id="rpPlay">▶ Play</button>
+          <button class="btn" id="rpStep">⏭ Step</button>
+          <button class="btn" id="rpReset">⏮ Reset</button>
+          <label class="sw">speed
+            <select id="rpSpeed"><option value="600">slow</option><option value="300" selected>normal</option><option value="120">fast</option></select>
+          </label>
+          <span class="chip" id="rpDayLabel">day —</span>
+        </div>
+        <p class="sub" style="margin-top:6px">Bars: alerts live that day, by tier. Lines: precision and
+           recall of the alert set on the evidence available at that moment.</p>
+        <input type="range" id="rpScrub" min="1" max="30" value="30" style="width:100%;margin:6px 0 10px">
+        <svg class="tlchart" id="rpChart" style="height:280px"></svg>
+        <div class="stagekey">
+          <span><i style="background:var(--crit)"></i>Critical</span>
+          <span><i style="background:var(--high)"></i>High</span>
+          <span><i style="background:var(--med)"></i>Medium</span>
+          <span><i style="background:var(--ok)"></i>Recall</span>
+          <span><i style="background:var(--accent)"></i>Precision</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;border-color:var(--accent)">
+        <h3 style="color:var(--accent)">Why streaming precision starts low and climbs</h3>
+        <div id="rpInsight"></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div class="card">
+          <h3>Day <span id="rpFrameDay" class="mono">—</span> - what the system knew</h3>
+          <div id="rpFrame"></div>
+        </div>
+        <div class="card">
+          <h3>Detection latency</h3>
+          <p class="sub">Days between an account first transacting and the first moment it could
+             have been alerted. This is the number that decides whether funds are still freezable.</p>
+          <div class="tbl-wrap" style="max-height:400px">
+            <table id="latencyTable">
+              <thead><tr><th>Account</th><th>Typology</th><th class="num">Active</th>
+                <th class="num">Detected</th><th class="num">Lag</th><th style="width:110px"></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ========================================================== RINGS -->
+    <section class="view" id="v-rings">
+      <div class="vhead">
+        <div><h2>Detected rings</h2>
+        <p>Communities are derived from the <em>detected</em> alert sub-network - never from the labels.
+           This is what the system would produce on unlabelled production data.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/export/rings.csv">⤓ Rings CSV</a>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <h3>Typology mix</h3>
+        <p class="sub">Share of alerted accounts by the typology of the ring they belong to.</p>
+        <div class="piewrap"><div id="typologyPie"></div><div class="pielegend" id="typologyLegend"></div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(330px,1fr))" id="ringCards"></div>
+    </section>
+
+    <!-- ==================================================== PROPAGATION -->
+    <section class="view" id="v-propagation">
+      <div class="vhead">
+        <div><h2>Suspicion propagation</h2>
+        <p>Guilt-by-association, deliberately kept <em>outside</em> the alerting pipeline so it can never
+           inflate precision. These accounts were not flagged by any rule - they are leads, ranked by
+           exposure to confirmed alerts.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/export/watchlist.csv">⤓ Watchlist CSV</a>
+      </div>
+      <div class="grid" style="grid-template-columns:1.35fr .65fr">
+        <div class="card">
+          <h3>Contamination watchlist</h3>
+          <p class="sub">Bounded-hop diffusion with geometric decay (0.45 per hop) from every confirmed
+             alert, weighted by that alert's risk score. The path back to the nearest known-bad account
+             is shown - that is what an investigator actually needs.</p>
+          <div class="tbl-wrap" style="max-height:520px">
+            <table id="watchTable">
+              <thead><tr><th>Account</th><th>Exposure</th><th>Hops</th><th>Nearest alert</th><th>Path back to known-bad</th><th>Verdict</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Personalised PageRank</h3>
+          <p class="sub">Second, independent view: random-walk mass restarting only at confirmed alerts.
+             Agreement between the two rankings is a stronger lead than either alone.</p>
+          <div id="prList" style="max-height:520px;overflow:auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== DOSSIER -->
+    <section class="view" id="v-dossier">
+      <div class="vhead">
+        <div><h2>FIU-IND Suspicious Transaction Report</h2>
+        <p>Filing-ready STR generated from the evidence, with narrative grounds of suspicion.</p></div>
+        <span class="spacer"></span>
+        <select id="dossierPick" style="min-width:170px"></select>
+        <button class="btn" id="dossierPrint">🖨 Print / PDF</button>
+        <a class="btn" id="dossierJson" href="#">⤓ JSON</a>
+        <a class="btn" href="/api/export/str_bundle.csv">⤓ All STRs (CSV)</a>
+      </div>
+      <div id="dossierBody"></div>
+    </section>
+
+    <!-- ========================================================== MODEL -->
+    <section class="view" id="v-model">
+      <div class="vhead">
+        <div><h2>Model evidence</h2>
+        <p>Accuracy, an ablation that shows which layer earns its keep, and a robustness sweep that
+           shows the result is not an artefact of one lucky threshold.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/export/metrics.json">⤓ metrics.json</a>
+      </div>
+      <div class="grid" style="grid-template-columns:.9fr 1.1fr">
+        <div class="card">
+          <h3>Accuracy against ground truth</h3>
+          <p class="sub" id="metricNote"></p>
+          <div id="metricTiles" class="grid kpis" style="grid-template-columns:1fr 1fr 1fr"></div>
+          <h3 style="margin-top:18px">Confusion matrix</h3>
+          <div class="conf" id="confusion"></div>
+          <div id="errorList" style="margin-top:12px;font-size:12.5px"></div>
+        </div>
+        <div class="card">
+          <h3>Ablation - what each layer adds</h3>
+          <p class="sub">Layers are switched on cumulatively. The final row is unsupervised ML with no
+             graph context at all, which is the honest baseline this project argues against.</p>
+          <div id="ablation"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>Hard negatives - lawful business shaped like crime</h3>
+        <p class="sub">Precision on a ledger where only criminals form triangles is close to
+           meaningless. The ledger therefore contains families of entirely legitimate accounts
+           engineered to reproduce each typology's topology. None of them is labelled fraud.
+           Anything caught here is the detector matching shape without understanding purpose.</p>
+        <div id="hardNegatives"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>Discriminator ablation - what stops the look-alikes</h3>
+        <p class="sub">The detection layers find the shapes; four economic tests decide whether a
+           shape is a crime. Each is switched off in isolation below. The final row is what a
+           topology-only AML detector actually scores.</p>
+        <div id="discAblation"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>Robustness - threshold sensitivity</h3>
+        <p class="sub">Every threshold perturbed independently; Jaccard similarity of the resulting alert
+           set against the baseline. 1.00 means the same accounts were flagged.</p>
+        <div id="robustness"></div>
+      </div>
+    </section>
+
+
+    <!-- ===================================================== ADVERSARY -->
+    <section class="view" id="v-adversary">
+      <div class="vhead">
+        <div><h2>Adversarial test</h2>
+        <p>Every threshold in layers 1 to 4 is published in this interface, and a number a launderer
+           can read is a number they can sit just outside. These two ledgers were built to do exactly
+           that. Both are scored twice: with the adaptive layer switched off, and with it on.</p></div>
+        <span class="spacer"></span>
+        <a class="btn" href="/api/evasion">⤓ JSON</a>
+      </div>
+      <div class="card">
+        <h3>What a launderer who has read the rulebook does</h3>
+        <p class="sub">The relay ring places every parameter outside a published threshold at once:
+           hops five days apart so the circular-flow window never closes, amounts far below the
+           reporting band, and reciprocal cover traffic on every member so the dedication ratio stays
+           low. The peeling chain is a typology this engine has no layer for at all, included to test
+           whether the adaptive layer generalises or has simply been fitted to the first ledger.</p>
+        <div id="advRows"></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div class="card">
+          <h3>How the adaptive layer works</h3>
+          <p class="sub">Three properties that follow from moving other people's money through other
+             people's accounts. None of them is a threshold anyone can step around.</p>
+          <div id="advExplain"></div>
+        </div>
+        <div class="card">
+          <h3>Where it still fails</h3>
+          <p class="sub">Stated here rather than left for a reviewer to find.</p>
+          <ul class="lim">
+            <li>Two of the three tests must agree before anything is flagged, so a launderer who
+                randomises timing <em>and</em> skims heavily <em>and</em> moves money through
+                genuinely busy trading accounts can still get under it. The cost of doing all three
+                is that the money moves slower and leaks more, which is a deterrent rather than a
+                detection.</li>
+            <li>The layer needs a relay of at least three hops. A single mule paid once and abandoned
+                leaves nothing to trace.</li>
+            <li>Centrality and the anomaly model still change no headline metric on this ledger. They
+                earn their place in triage, deciding which alert an analyst opens first, not in
+                detection. That distinction is measured on the model evidence page.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================== ECONOMICS -->
+    <section class="view" id="v-economics">
+      <div class="vhead">
+        <div><h2>Alert economics</h2>
+        <p>Detection quality is not the decision a bank makes. The decision is how many analysts
+           to staff, and every threshold in this system is really a budget line. This converts the
+           current configuration into hours, headcount and rupees.</p></div>
+        <span class="spacer"></span>
+      </div>
+      <div class="grid kpis" id="econKpis"></div>
+
+      <div class="grid" style="grid-template-columns:.95fr 1.05fr;margin-top:14px">
+        <div class="card">
+          <h3>Staffing assumptions</h3>
+          <p class="sub">Change these to match your institution; the model recosts instantly.</p>
+          <div class="slider-row">
+            <div class="lbl">Analyst cost per hour<small>Fully loaded compliance analyst</small></div>
+            <input type="range" id="econRate" min="300" max="5000" step="100" value="1200">
+            <div class="val" id="econRateV">₹1,200</div>
+          </div>
+          <div class="slider-row">
+            <div class="lbl">Portfolio multiplier<small>How many books this size the bank runs</small></div>
+            <input type="range" id="econMult" min="1" max="500" step="1" value="1">
+            <div class="val" id="econMultV">1×</div>
+          </div>
+          <div class="slider-row">
+            <div class="lbl">Review effort<small>Minutes per alert, by tier</small></div>
+            <div class="val" style="grid-column:2/4;text-align:left" id="econMinutes"></div>
+          </div>
+          <div id="econNarrative" style="margin-top:14px;font-size:13px;line-height:1.7"></div>
+        </div>
+
+        <div>
+          <div class="card">
+            <h3>Where the analyst hours go</h3>
+            <p class="sub">Effort by tier, and how much of it is spent on accounts that turn out clean.</p>
+            <div class="piewrap"><div id="econPie"></div><div class="pielegend" id="econPieLegend"></div></div>
+          <div id="econEffort" style="margin-top:14px"></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>Conversion rate in context</h3>
+            <p class="sub">Share of alerts that become a filed report.</p>
+            <div id="econConversion"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>Threshold ↔ cost frontier</h3>
+        <p class="sub">The same pipeline at a range of fan-branch thresholds. Each point is a real
+           re-run, not an interpolation: it shows what tightening a rule buys and what it costs.</p>
+        <div class="toolbar"><button class="btn primary" id="frontierBtn">▶ Compute frontier</button>
+          <span class="faint" id="frontierStatus"></span></div>
+        <div id="frontier"></div>
+      </div>
+    </section>
+    <!-- ============================================================ LAB -->
+    <section class="view" id="v-lab">
+      <div class="vhead">
+        <div><h2>Detection lab</h2>
+        <p>Re-run the entire pipeline live. Move a threshold and watch precision, recall and the alert
+           population respond - this is the panel that answers "is your result tuned to the seed?".</p></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1.1fr .9fr">
+        <div class="card">
+          <h3>Thresholds</h3>
+          <p class="sub">Changes re-run detection on the current ledger.</p>
+          <div id="sliders"></div>
+          <h3 style="margin-top:16px">Layers</h3>
+          <div id="layerToggles" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px"></div>
+          <div class="toolbar" style="margin-top:16px">
+            <button class="btn primary" id="applyCfg">▶ Re-run detection</button>
+            <button class="btn" id="resetCfg">Reset defaults</button>
+            <span class="faint" id="cfgStatus"></span>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3>Live result</h3>
+            <div id="labResult"></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>Regenerate the ledger</h3>
+            <p class="sub">Different random seed - proves the result is a property of the method,
+               not of one dataset.</p>
+            <div class="toolbar">
+              <label class="sw">seed <input type="text" id="seed" value="7" style="width:70px"></label>
+              <label class="sw">accounts <input type="text" id="nnorm" value="135" style="width:70px"></label>
+              <label class="sw">background txns <input type="text" id="ntxn" value="150" style="width:70px"></label>
+              <button class="btn primary" id="regen">⟳ Generate & analyse</button>
+            </div>
+            <div id="seedSweep" style="margin-top:10px"></div>
+            <button class="btn" id="sweepBtn" style="margin-top:8px">Run 5-seed stability sweep</button>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>Bring your own ledger</h3>
+            <p class="sub">Raw exports of the public AML datasets are auto-detected - no
+               reformatting. Schema is recognised from the column signature.</p>
+            <div id="schemaList" style="margin-bottom:10px"></div>
+            <div class="drop" id="drop">Drop a CSV here, or click to choose a file
+              <input type="file" id="file" accept=".csv,text/csv" hidden>
+            </div>
+            <div id="uploadMsg" style="margin-top:8px;font-size:12.5px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===================================================== PROVENANCE -->
+    <section class="view" id="v-provenance">
+      <div class="vhead">
+        <div><h2>Where this data comes from</h2>
+        <p>The honest answer, in full, because it is the first thing anyone should ask of an
+           AML system - and the answer most demos avoid.</p></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="card" style="border-color:rgba(255,159,67,.45)">
+          <h3 style="color:var(--high)">Why the ledger is synthetic</h3>
+          <p id="provWhy" style="font-size:13px;line-height:1.7;color:var(--muted);margin:8px 0 0"></p>
+        </div>
+        <div class="card" style="border-color:rgba(56,224,216,.45)">
+          <h3 style="color:var(--accent)">What in it is real</h3>
+          <p id="provReal" style="font-size:13px;line-height:1.7;color:var(--muted);margin:8px 0 0"></p>
+        </div>
+        <div class="card" style="border-color:rgba(255,77,109,.4)">
+          <h3 style="color:var(--crit)">What is invented</h3>
+          <p id="provNot" style="font-size:13px;line-height:1.7;color:var(--muted);margin:8px 0 0"></p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>Every calibrated parameter, with its source</h3>
+        <p class="sub">Change a figure in <span class="mono">india_calibration.py</span> and the
+           ledger, the detector and the exported report all move with it. Nothing below is
+           hard-coded anywhere else.</p>
+        <div class="tbl-wrap" style="max-height:420px">
+          <table id="provTable">
+            <thead><tr><th style="cursor:default">Parameter</th><th style="cursor:default">Value used</th>
+              <th style="cursor:default">Basis</th><th style="cursor:default">Source</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="stagekey" style="margin-top:10px">
+          <span><i style="background:var(--ok)"></i><b>reported</b> - quoted from an RBI / NPCI / FIU-IND publication</span>
+          <span><i style="background:var(--accent2)"></i><b>regulatory</b> - a standing statutory threshold</span>
+          <span><i style="background:var(--med)"></i><b>derived</b> - arithmetic on reported figures</span>
+          <span><i style="background:var(--high)"></i><b>assumed</b> - a modelling choice, stated not hidden</span>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div class="card">
+          <h3>Sources</h3>
+          <div id="provSources" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <h3>How the ledger compares to the real rails</h3>
+          <p class="sub">Channel mix of ordinary (non-laundering) transactions in this ledger,
+             against the RBI-published national shares. Laundering traffic is deliberately
+             excluded - criminals do not use the rails in national proportions.</p>
+          <div id="provMix"></div>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================================== EXPORTS -->
+    <section class="view" id="v-exports">
+      <div class="vhead">
+        <div><h2>Exports</h2><p>Everything the pipeline produces, in the formats a compliance team actually uses.</p></div>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))" id="exportCards"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+name,why,precision,recall,f1,fp,decoys_caught,decoys_total
+All discriminators on (baseline),,1.0,1.0,1.0,0,0,19
+Without: Threshold avoidance (L1),"Without it, a payroll bureau paid just under the CTR line looks like structuring.",0.9459459459459459,1.0,0.9722222222222222,2,2,19
+Without: Branch dedication (L2),"Without it, any customer paying three contractors who share a supplier is a fan-out ring.",0.7777777777777778,1.0,0.875,10,10,19
+Without: Standing relationship (L3),"Without it, ordinary card settlement between merchant, PSP and acquirer is a laundering loop.",0.8536585365853658,1.0,0.9210526315789473,6,6,19
+Without: Settlement-rail recurrence (L4),"Without it, an escrow agent or acquiring bank is indistinguishable from a money mule.",0.9459459459459459,1.0,0.9722222222222222,2,2,19
+Without: One-shot corridor (L9),"Without it, every recurring settlement relay reads as a threshold-evasive relay chain.",1.0,1.0,1.0,0,0,19
+Without: Inferred reporting line (L9),"Without it, any account paying the same counterparty repeatedly looks like slow structuring.",1.0,1.0,1.0,0,0,19
+All discriminators off (shape matching only),This is what a topology-only AML detector actually scores.,0.660377358490566,1.0,0.7954545454545454,18,18,19

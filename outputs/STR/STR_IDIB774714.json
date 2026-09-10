@@ -1,0 +1,151 @@
+{
+  "report_type": "SUSPICIOUS TRANSACTION REPORT (STR)",
+  "regulatory_basis": "Section 12, Prevention of Money-Laundering Act, 2002 r/w Rule 3, PML (Maintenance of Records) Rules, 2005 - reported to FIU-IND",
+  "report_reference": "STR/AMLT/2026/IDIB774714",
+  "reporting_entity": "AMLTrace Analytics - prototype reporting entity",
+  "date_of_report": "2026-09-10",
+  "account_id": "IDIB774714",
+  "risk_score": 5,
+  "risk_tier": "CRITICAL",
+  "recommended_action": "Freeze review by senior compliance officer; file STR within 7 days",
+  "sla": "T+0",
+  "ctr_threshold_applied": 1000000,
+  "narrative": "Account IDIB774714 has been assessed as CRITICAL risk. Over the observation window it received Rs 4,760,595 and disbursed Rs 0. The account was surfaced by 3 independent detection layer(s) evidencing threshold evasion, behavioural anomaly, structuring / smurfing. The account does not act alone: it is one of 2 accounts in RING-05, alongside PUNB249924, moving Rs 4,760,595 between themselves. Taken together the transaction pattern has no apparent lawful or economic purpose and is consistent with the placement and layering of proceeds of crime. A Suspicious Transaction Report is warranted under Section 12 of the Prevention of Money-Laundering Act, 2002 read with Rule 3 of the PML (Maintenance of Records) Rules, 2005.",
+  "grounds_of_suspicion": [
+    {
+      "layer": "STRUCTURING",
+      "layer_label": "Structuring / smurfing",
+      "role": "primary",
+      "detail": "5 transfers PUNB249924 -> IDIB774714 totalling Rs 4,760,595, every one sized between 85% and 100% of the Rs 1,000,000 CTR threshold, all inside 4 day(s). Amount selection is the tell: a legitimate payer has no reason to keep landing just under the reporting line.",
+      "evidence": [
+        "TXN00156",
+        "TXN00157",
+        "TXN00158",
+        "TXN00159",
+        "TXN00160"
+      ]
+    },
+    {
+      "layer": "ADAPTIVE",
+      "layer_label": "Threshold evasion",
+      "role": "primary",
+      "detail": "5 transfers PUNB249924 -> IDIB774714 totalling Rs 4,760,595, every one under Rs 1,000,000 and averaging 95% of it, spread over 4 day(s). The reporting line was not read from a rulebook: it is the lowest round figure these tranches never cross, so the same test works in any jurisdiction. Tranche sizes vary by only 3%, which is a payer sizing to a limit rather than invoicing for goods, and the sender never once pays this receiver above the line. Spreading deposits out defeats the 5-day structuring window; it does not change any of that.",
+      "evidence": [
+        "TXN00156",
+        "TXN00157",
+        "TXN00158",
+        "TXN00159",
+        "TXN00160"
+      ]
+    },
+    {
+      "layer": "ML-ANOMALY",
+      "layer_label": "Behavioural anomaly",
+      "role": "corroborating",
+      "detail": "IsolationForest isolates this account at score -0.080. Largest deviations: amount_below_ctr_ratio (z=+5.2); total_received (z=+3.2); in_count (z=+2.3). Unsupervised, so it corroborates rather than originates the alert.",
+      "evidence": []
+    }
+  ],
+  "transaction_summary": {
+    "total_inflow": 4760595,
+    "total_outflow": 0,
+    "net_position": 4760595,
+    "transaction_count": 5,
+    "counterparties": 2,
+    "first_activity_day": 20,
+    "last_activity_day": 24,
+    "credits_just_below_ctr": 5
+  },
+  "behavioural_z_scores": {
+    "out_count": -1.38,
+    "in_count": 2.346,
+    "total_sent": -0.439,
+    "total_received": 3.214,
+    "sent_std": -0.35,
+    "unique_out_counterparties": -1.564,
+    "unique_in_counterparties": -0.335,
+    "amount_below_ctr_ratio": 5.231,
+    "median_hold_days": 0.732
+  },
+  "betweenness_centrality": 0.0,
+  "ml_anomaly_score": -0.0804,
+  "associated_ring": {
+    "ring_id": "RING-05",
+    "typology": "Structuring / smurfing",
+    "members": [
+      "IDIB774714",
+      "PUNB249924"
+    ],
+    "internal_value": 4760595
+  },
+  "one_hop_subgraph": {
+    "nodes": [
+      {
+        "id": "IDIB774714",
+        "risk": 5,
+        "tier": "CRITICAL"
+      },
+      {
+        "id": "PUNB249924",
+        "risk": 5,
+        "tier": "CRITICAL"
+      }
+    ],
+    "edges": [
+      {
+        "source": "PUNB249924",
+        "target": "IDIB774714",
+        "amount": 4760595,
+        "count": 5
+      }
+    ]
+  },
+  "transactions": [
+    {
+      "txn_id": "TXN00156",
+      "date": "2026-08-20",
+      "day": 20,
+      "direction": "CREDIT",
+      "counterparty": "PUNB249924",
+      "amount": 983532,
+      "channel": "NEFT"
+    },
+    {
+      "txn_id": "TXN00157",
+      "date": "2026-08-21",
+      "day": 21,
+      "direction": "CREDIT",
+      "counterparty": "PUNB249924",
+      "amount": 939736,
+      "channel": "NEFT"
+    },
+    {
+      "txn_id": "TXN00158",
+      "date": "2026-08-22",
+      "day": 22,
+      "direction": "CREDIT",
+      "counterparty": "PUNB249924",
+      "amount": 918402,
+      "channel": "NEFT"
+    },
+    {
+      "txn_id": "TXN00159",
+      "date": "2026-08-23",
+      "day": 23,
+      "direction": "CREDIT",
+      "counterparty": "PUNB249924",
+      "amount": 986154,
+      "channel": "NEFT"
+    },
+    {
+      "txn_id": "TXN00160",
+      "date": "2026-08-24",
+      "day": 24,
+      "direction": "CREDIT",
+      "counterparty": "PUNB249924",
+      "amount": 932771,
+      "channel": "NEFT"
+    }
+  ],
+  "action_taken": "Sub-network temporary hold recommended; account and its one-hop neighbourhood quarantined pending FIU-IND acknowledgement."
+}

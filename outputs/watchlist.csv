@@ -1,0 +1,26 @@
+account,score,raw,hops,nearest_alert,path,verdict
+SBIN932967,1.0,3.9409,1,UBIN261949,UBIN261949 -> SBIN932967,Enhanced due diligence - one hop from a confirmed alert
+ICIC917857,0.8707,3.4312,1,HDFC259211,HDFC259211 -> ICIC917857,Enhanced due diligence - one hop from a confirmed alert
+UTIB165839,0.841,3.3143,1,UTIB119613,UTIB119613 -> UTIB165839,Enhanced due diligence - one hop from a confirmed alert
+HDFC661913,0.8279,3.2625,1,YESB330254,YESB330254 -> HDFC661913,Enhanced due diligence - one hop from a confirmed alert
+ICIC427000,0.8279,3.2625,1,PUNB249924,PUNB249924 -> ICIC427000,Enhanced due diligence - one hop from a confirmed alert
+IBKL815887,0.6189,2.439,1,KKBK226182,KKBK226182 -> IBKL815887,Enhanced due diligence - one hop from a confirmed alert
+HDFC660559,0.5829,2.2973,1,SBIN632840,SBIN632840 -> HDFC660559,Enhanced due diligence - one hop from a confirmed alert
+ICIC513264,0.5829,2.2973,1,UTIB896910,UTIB896910 -> ICIC513264,Enhanced due diligence - one hop from a confirmed alert
+SBIN104292,0.5829,2.2973,1,SBIN632840,SBIN632840 -> SBIN104292,Enhanced due diligence - one hop from a confirmed alert
+SBIN917710,0.5829,2.2973,1,UTIB896910,UTIB896910 -> SBIN917710,Enhanced due diligence - one hop from a confirmed alert
+PUNB309001,0.5367,2.115,1,HDFC574140,HDFC574140 -> PUNB309001,Enhanced due diligence - one hop from a confirmed alert
+CNRB163863,0.5113,2.0149,2,UBIN261949,UBIN261949 -> SBIN932967 -> CNRB163863,Monitor - indirect exposure at 2 hops
+ICIC766728,0.4727,1.863,2,SBIN632840,SBIN632840 -> HDFC660559 -> ICIC766728,Monitor - indirect exposure at 2 hops
+BARB511439,0.4188,1.6504,2,UBIN261949,UBIN261949 -> SBIN932967 -> BARB511439,Monitor - indirect exposure at 2 hops
+ICIC676947,0.4188,1.6504,2,UBIN261949,UBIN261949 -> SBIN932967 -> ICIC676947,Monitor - indirect exposure at 2 hops
+IDIB568952,0.4188,1.6504,2,YESB330254,YESB330254 -> HDFC661913 -> IDIB568952,Monitor - indirect exposure at 2 hops
+IDIB597128,0.4188,1.6504,2,PUNB249924,PUNB249924 -> ICIC427000 -> IDIB597128,Monitor - indirect exposure at 2 hops
+SBIN677814,0.4188,1.6504,2,YESB330254,YESB330254 -> HDFC661913 -> SBIN677814,Monitor - indirect exposure at 2 hops
+UBIN959077,0.4034,1.5896,2,HDFC574140,HDFC574140 -> PUNB309001 -> UBIN959077,Monitor - indirect exposure at 2 hops
+CNRB291200,0.3725,1.4681,2,YESB330254,YESB330254 -> HDFC661913 -> CNRB291200,Monitor - indirect exposure at 2 hops
+SBIN130387,0.3725,1.4681,2,PUNB249924,PUNB249924 -> ICIC427000 -> SBIN130387,Monitor - indirect exposure at 2 hops
+SBIN352223,0.3623,1.4276,2,UTIB119613,UTIB119613 -> UTIB165839 -> SBIN352223,Monitor - indirect exposure at 2 hops
+HDFC685184,0.3571,1.4074,2,SBIN632840,SBIN632840 -> SBIN104292 -> HDFC685184,Monitor - indirect exposure at 2 hops
+ICIC299868,0.3571,1.4074,2,UTIB896910,UTIB896910 -> SBIN917710 -> ICIC299868,Monitor - indirect exposure at 2 hops
+UTIB151998,0.316,1.2454,2,UTIB119613,UTIB119613 -> UTIB165839 -> UTIB151998,Monitor - indirect exposure at 2 hops

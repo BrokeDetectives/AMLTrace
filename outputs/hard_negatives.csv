@@ -1,0 +1,5 @@
+family,accounts,caught,survived,discrimination,caught_accounts
+Card settlement (cycle shape),6,0,6,1.0,
+Escrow agent (pass-through shape),1,0,1,1.0,
+Payroll bureau (structuring shape),2,0,2,1.0,
+Supply chain (fan shape),10,0,10,1.0,

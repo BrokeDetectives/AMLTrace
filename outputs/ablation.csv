@@ -1,0 +1,9 @@
+name,precision,recall,f1,tp,fp,fn,flagged
+L1 Structuring only,1.0,0.17142857142857143,0.2926829268292683,6,0,29,6
+'+ L2 Fan patterns,1.0,0.6,0.75,21,0,14,21
+'+ L3 Cycles,1.0,0.9428571428571428,0.9705882352941176,33,0,2,33
+'+ L4 Pass-through (all rules),1.0,1.0,1.0,35,0,0,35
+'+ L9 Evasion-adaptive,1.0,1.0,1.0,35,0,0,35
+'+ L5 Centrality,1.0,1.0,1.0,35,0,0,35
+'+ L6 ML corroboration (full),1.0,1.0,1.0,35,0,0,35
+"ML alone, no graph context (baseline)",0.35294117647058826,0.17142857142857143,0.23076923076923078,6,11,29,17

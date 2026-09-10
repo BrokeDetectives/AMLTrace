@@ -1,0 +1,751 @@
+{
+  "dataset": {
+    "accounts": 187,
+    "transactions": 301,
+    "total_value": 107151277,
+    "days": 30,
+    "labelled": true,
+    "fraud_linked_accounts": 35,
+    "decoy_accounts": 19,
+    "epoch": "2026-08-01"
+  },
+  "summary": {
+    "flagged": 35,
+    "tiers": {
+      "CRITICAL": 10,
+      "HIGH": 1,
+      "MEDIUM": 24,
+      "LOW": 0
+    },
+    "rings": 9,
+    "modularity": 0.1241,
+    "exposure": 54590319,
+    "illicit_flow": 44391379,
+    "illicit_share": 0.4143,
+    "layer_counts": {
+      "ADAPTIVE": 6,
+      "ML-ANOMALY": 6,
+      "STRUCTURING": 6,
+      "FAN": 15,
+      "CENTRALITY": 2,
+      "PASS-THROUGH": 6,
+      "CYCLE": 12
+    },
+    "watchlist": 25
+  },
+  "metrics": {
+    "labelled": true,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 35,
+    "fp": 0,
+    "fn": 0,
+    "tn": 152,
+    "false_positives": [],
+    "false_negatives": []
+  },
+  "decoys": {
+    "present": true,
+    "total": 19,
+    "caught": 0,
+    "discrimination": 1.0,
+    "families": [
+      {
+        "family": "Card settlement (cycle shape)",
+        "accounts": 6,
+        "caught": 0,
+        "survived": 6,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Escrow agent (pass-through shape)",
+        "accounts": 1,
+        "caught": 0,
+        "survived": 1,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Payroll bureau (structuring shape)",
+        "accounts": 2,
+        "caught": 0,
+        "survived": 2,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      },
+      {
+        "family": "Supply chain (fan shape)",
+        "accounts": 10,
+        "caught": 0,
+        "survived": 10,
+        "discrimination": 1.0,
+        "layers_tripped": {},
+        "caught_accounts": []
+      }
+    ],
+    "share_of_false_positives": 0.0,
+    "note": "Every account above is lawful. Each family is engineered to reproduce the topology of one typology, so anything caught here is a detector matching shape without understanding purpose."
+  },
+  "discriminator_ablation": [
+    {
+      "name": "All discriminators on (baseline)",
+      "why": "",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Threshold avoidance (L1)",
+      "why": "Without it, a payroll bureau paid just under the CTR line looks like structuring.",
+      "precision": 0.9459459459459459,
+      "recall": 1.0,
+      "f1": 0.9722222222222222,
+      "fp": 2,
+      "decoys_caught": 2,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Branch dedication (L2)",
+      "why": "Without it, any customer paying three contractors who share a supplier is a fan-out ring.",
+      "precision": 0.7777777777777778,
+      "recall": 1.0,
+      "f1": 0.875,
+      "fp": 10,
+      "decoys_caught": 10,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Standing relationship (L3)",
+      "why": "Without it, ordinary card settlement between merchant, PSP and acquirer is a laundering loop.",
+      "precision": 0.8536585365853658,
+      "recall": 1.0,
+      "f1": 0.9210526315789473,
+      "fp": 6,
+      "decoys_caught": 6,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Settlement-rail recurrence (L4)",
+      "why": "Without it, an escrow agent or acquiring bank is indistinguishable from a money mule.",
+      "precision": 0.9459459459459459,
+      "recall": 1.0,
+      "f1": 0.9722222222222222,
+      "fp": 2,
+      "decoys_caught": 2,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: One-shot corridor (L9)",
+      "why": "Without it, every recurring settlement relay reads as a threshold-evasive relay chain.",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "Without: Inferred reporting line (L9)",
+      "why": "Without it, any account paying the same counterparty repeatedly looks like slow structuring.",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "decoys_caught": 0,
+      "decoys_total": 19
+    },
+    {
+      "name": "All discriminators off (shape matching only)",
+      "why": "This is what a topology-only AML detector actually scores.",
+      "precision": 0.660377358490566,
+      "recall": 1.0,
+      "f1": 0.7954545454545454,
+      "fp": 18,
+      "decoys_caught": 18,
+      "decoys_total": 19
+    }
+  ],
+  "ablation": [
+    {
+      "name": "L1 Structuring only",
+      "precision": 1.0,
+      "recall": 0.17142857142857143,
+      "f1": 0.2926829268292683,
+      "tp": 6,
+      "fp": 0,
+      "fn": 29,
+      "flagged": 6
+    },
+    {
+      "name": "+ L2 Fan patterns",
+      "precision": 1.0,
+      "recall": 0.6,
+      "f1": 0.75,
+      "tp": 21,
+      "fp": 0,
+      "fn": 14,
+      "flagged": 21
+    },
+    {
+      "name": "+ L3 Cycles",
+      "precision": 1.0,
+      "recall": 0.9428571428571428,
+      "f1": 0.9705882352941176,
+      "tp": 33,
+      "fp": 0,
+      "fn": 2,
+      "flagged": 33
+    },
+    {
+      "name": "+ L4 Pass-through (all rules)",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L9 Evasion-adaptive",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L5 Centrality",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "+ L6 ML corroboration (full)",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 35,
+      "fp": 0,
+      "fn": 0,
+      "flagged": 35
+    },
+    {
+      "name": "ML alone, no graph context (baseline)",
+      "precision": 0.35294117647058826,
+      "recall": 0.17142857142857143,
+      "f1": 0.23076923076923078,
+      "tp": 6,
+      "fp": 11,
+      "fn": 29,
+      "flagged": 17
+    }
+  ],
+  "robustness": {
+    "perturbations": [
+      {
+        "name": "ML cutoff -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "ML cutoff +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Centrality z -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Centrality z +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Structuring window -1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Structuring window +1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Pass-through window +1d",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Fan min branches +1",
+        "jaccard": 0.6,
+        "flagged": 21
+      },
+      {
+        "name": "Cycle span slack +2",
+        "jaccard": 0.921,
+        "flagged": 38
+      },
+      {
+        "name": "Cycle monotonicity off",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion rhythm -25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion rhythm +25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion net dedication -15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion net dedication +15%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Evasion conservation +25%",
+        "jaccard": 1.0,
+        "flagged": 35
+      },
+      {
+        "name": "Inferred line hug -10%",
+        "jaccard": 1.0,
+        "flagged": 35
+      }
+    ],
+    "mean_jaccard": 0.97
+  },
+  "economics": {
+    "assumptions": {
+      "analyst_cost_per_hour": 1200,
+      "review_minutes_by_tier": {
+        "CRITICAL": 240,
+        "HIGH": 120,
+        "MEDIUM": 45,
+        "LOW": 10
+      },
+      "observation_days": 30,
+      "portfolio_multiplier": 1,
+      "productive_hours_per_fte_year": 1800
+    },
+    "alerts_per_day": 1.17,
+    "alerts_per_year": 426,
+    "review_hours_window": 60.0,
+    "review_hours_year": 730,
+    "analyst_fte": 0.41,
+    "annual_review_cost": 876000,
+    "value_at_risk": 54590319,
+    "illicit_flow_surfaced": 44391379,
+    "return_per_analyst_hour": 739856,
+    "cost_per_alert": 2057,
+    "false_positive_burden": {
+      "false_positives": 0,
+      "wasted_hours_window": 0.0,
+      "wasted_cost_year": 0,
+      "share_of_review_effort": 0.0
+    },
+    "conversion_rate": 1.0,
+    "industry_comparison": {
+      "typical_bank_conversion": 0.06,
+      "note": "Large banks typically convert 4-10% of AML alerts into a filed report. Anything far above that is either a better detector or an easier book of business - on synthetic data, assume the latter until proven otherwise."
+    },
+    "missed": {
+      "accounts": 0,
+      "note": "Undetected accounts carry unquantified risk; recall is the expensive metric."
+    }
+  },
+  "replay": {
+    "mean_latency_days": 4.23,
+    "median_latency_days": 4.0,
+    "worst_latency_days": 17,
+    "first_alert_day": 3,
+    "detected": 35,
+    "never_detected": 0
+  },
+  "streaming": {
+    "worst_precision": 0.0,
+    "worst_day": 3,
+    "converged_day": 22
+  },
+  "rings": [
+    {
+      "ring_id": "RING-01",
+      "typology": "Fan-out / fan-in",
+      "size": 7,
+      "internal_value": 5257409,
+      "layers": [
+        "CENTRALITY",
+        "FAN",
+        "PASS-THROUGH"
+      ]
+    },
+    {
+      "ring_id": "RING-02",
+      "typology": "Circular flow",
+      "size": 5,
+      "internal_value": 3042922,
+      "layers": [
+        "CYCLE",
+        "PASS-THROUGH"
+      ]
+    },
+    {
+      "ring_id": "RING-03",
+      "typology": "Fan-out / fan-in",
+      "size": 5,
+      "internal_value": 3727636,
+      "layers": [
+        "FAN"
+      ]
+    },
+    {
+      "ring_id": "RING-04",
+      "typology": "Fan-out / fan-in",
+      "size": 5,
+      "internal_value": 2537855,
+      "layers": [
+        "FAN"
+      ]
+    },
+    {
+      "ring_id": "RING-05",
+      "typology": "Structuring / smurfing",
+      "size": 2,
+      "internal_value": 4760595,
+      "layers": [
+        "ADAPTIVE",
+        "ML-ANOMALY",
+        "STRUCTURING"
+      ]
+    },
+    {
+      "ring_id": "RING-06",
+      "typology": "Structuring / smurfing",
+      "size": 2,
+      "internal_value": 4723738,
+      "layers": [
+        "ADAPTIVE",
+        "ML-ANOMALY",
+        "STRUCTURING"
+      ]
+    },
+    {
+      "ring_id": "RING-07",
+      "typology": "Structuring / smurfing",
+      "size": 2,
+      "internal_value": 4767409,
+      "layers": [
+        "ADAPTIVE",
+        "ML-ANOMALY",
+        "STRUCTURING"
+      ]
+    },
+    {
+      "ring_id": "RING-08",
+      "typology": "Circular flow",
+      "size": 4,
+      "internal_value": 2307363,
+      "layers": [
+        "CYCLE"
+      ]
+    },
+    {
+      "ring_id": "RING-09",
+      "typology": "Circular flow",
+      "size": 3,
+      "internal_value": 1557210,
+      "layers": [
+        "CYCLE",
+        "PASS-THROUGH"
+      ]
+    }
+  ],
+  "frontier": [
+    {
+      "fan_min_branches": 2,
+      "recall": 1.0,
+      "cost": 967250,
+      "fte": 0.45
+    },
+    {
+      "fan_min_branches": 3,
+      "recall": 1.0,
+      "cost": 876000,
+      "fte": 0.41
+    },
+    {
+      "fan_min_branches": 4,
+      "recall": 0.6,
+      "cost": 657000,
+      "fte": 0.3
+    },
+    {
+      "fan_min_branches": 5,
+      "recall": 0.6,
+      "cost": 657000,
+      "fte": 0.3
+    }
+  ],
+  "seeds": [
+    {
+      "seed": 7,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 13,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 21,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 42,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 99,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 101,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 777,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 2026,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 31337,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    },
+    {
+      "seed": 5,
+      "precision": 1.0,
+      "recall": 1.0,
+      "fp": 0
+    }
+  ],
+  "seed_summary": {
+    "n": 10,
+    "mean_precision": 1.0,
+    "min_precision": 1.0,
+    "mean_recall": 1.0,
+    "min_recall": 1.0
+  },
+  "adversary": [
+    {
+      "scenario": "Textbook criminals (the bundled ledger)",
+      "recall": 1.0
+    },
+    {
+      "scenario": "Mules hold funds 4 days, not 1",
+      "recall": 0.9714285714285714
+    },
+    {
+      "scenario": "Deposits at 70% of CTR, not 95%",
+      "recall": 1.0
+    },
+    {
+      "scenario": "Structuring spread over 12 days",
+      "recall": 1.0
+    },
+    {
+      "scenario": "Cycles closing 3x slower",
+      "recall": 0.8857142857142857
+    }
+  ],
+  "evasion": [
+    {
+      "scenario": "Threshold-evasive relay ring",
+      "note": "Six accounts moving one sum in a loop, every parameter placed outside the published thresholds and every member given reciprocal cover traffic.",
+      "criminal_accounts": 6,
+      "recall_without_adaptive": 0.0,
+      "recall_with_adaptive": 1.0,
+      "precision_with_adaptive": 1.0,
+      "caught_without": 0,
+      "caught_with": 6,
+      "false_positives_with": 0
+    },
+    {
+      "scenario": "Peeling chain (typology not implemented)",
+      "note": "A sum walking a line of accounts, shedding a slice to a fresh beneficiary at each hop. No layer in this engine was written for this shape.",
+      "criminal_accounts": 8,
+      "recall_without_adaptive": 0.0,
+      "recall_with_adaptive": 1.0,
+      "precision_with_adaptive": 1.0,
+      "caught_without": 0,
+      "caught_with": 8,
+      "false_positives_with": 0
+    }
+  ],
+  "provenance": {
+    "headline": "Synthetic ledger, calibrated to real published Indian figures",
+    "why_synthetic": "Account-level Indian transaction data is not publicly available and cannot be. Customer records are protected by RBI regulation, by PMLA confidentiality and by the DPDP Act 2023 - no bank or regulator publishes a customer ledger. Every public AML dataset, including IBM's and PaySim, is synthetic for the same reason.",
+    "what_is_real": "The rails, the thresholds and the money. Channel mix, average ticket size per rail, the CTR reporting threshold, the RTGS floor, per-transaction caps and the institution codes are all taken from RBI, NPCI and FIU-IND publications and are cited line by line below.",
+    "what_is_not": "The accounts, the counterparties and the laundering rings are invented. No real person, account or institution's activity appears anywhere in this system.",
+    "sources": {
+      "rbi_psr": {
+        "label": "RBI Payment Systems Report",
+        "period": "H1 CY2025 (published 2025)",
+        "url": "https://www.rbi.org.in/",
+        "note": "Volume and value shares by payment system."
+      },
+      "npci_upi": {
+        "label": "NPCI UPI ecosystem statistics",
+        "period": "H1 CY2025",
+        "url": "https://www.npci.org.in/what-we-do/upi/product-statistics",
+        "note": "Monthly UPI volume and value."
+      },
+      "pmlr_2005": {
+        "label": "PML (Maintenance of Records) Rules, 2005, Rule 3",
+        "period": "in force",
+        "url": "https://fiuindia.gov.in/",
+        "note": "Cash Transaction Report threshold; STR has no amount floor."
+      },
+      "rbi_rtgs": {
+        "label": "RBI RTGS System Regulations",
+        "period": "in force",
+        "url": "https://www.rbi.org.in/",
+        "note": "RTGS is for high-value transfers; minimum per transaction Rs 2,00,000."
+      },
+      "npci_limits": {
+        "label": "NPCI channel transaction limits",
+        "period": "in force",
+        "url": "https://www.npci.org.in/",
+        "note": "Per-transaction caps for UPI and IMPS."
+      }
+    },
+    "parameters": [
+      {
+        "group": "Channel mix",
+        "value": "UPI 85.0% vol / 9.0% val, NEFT 10.8% vol / 19.0% val, IMPS 4.1% vol / 3.0% val, RTGS 0.1% vol / 69.0% val",
+        "confidence": "reported",
+        "source": "rbi_psr",
+        "detail": "UPI ~85% of volume / ~9% of value; RTGS ~0.1% of volume / ~69% of value (H1 CY2025). NEFT and IMPS fill the remainder of the account-to-account share."
+      },
+      {
+        "group": "Average ticket size",
+        "value": "UPI Rs 1,347, NEFT Rs 48,200, IMPS Rs 9,800, RTGS Rs 5,600,000",
+        "confidence": "derived",
+        "source": "rbi_psr + npci_upi",
+        "detail": "UPI = Rs 143.3 trn / 106.37 bn txns (H1 CY2025). NEFT = Rs 482 lakh crore / ~1,000 crore txns (CY2025). IMPS and RTGS derived from their reported volume and value shares."
+      },
+      {
+        "group": "CTR threshold",
+        "value": "Rs 1,000,000",
+        "confidence": "regulatory",
+        "source": "pmlr_2005",
+        "detail": "Cash transactions above Rs 10 lakh must be reported; so must multiple smaller transactions aggregating above Rs 10 lakh in a month. STRs are judgment-based with no amount floor, filed within 7 working days."
+      },
+      {
+        "group": "RTGS minimum",
+        "value": "Rs 200,000",
+        "confidence": "regulatory",
+        "source": "rbi_rtgs",
+        "detail": "RTGS carries no transaction below Rs 2,00,000. A ledger that puts small sums on RTGS is immediately implausible to anyone who works in payments."
+      },
+      {
+        "group": "Per-transaction caps",
+        "value": "UPI Rs 100,000, IMPS Rs 500,000, NEFT none, RTGS none",
+        "confidence": "regulatory",
+        "source": "npci_limits",
+        "detail": "UPI general per-transaction cap Rs 1,00,000 (higher for specific categories such as capital markets and insurance); IMPS Rs 5,00,000. NEFT and RTGS have no per-transaction ceiling."
+      },
+      {
+        "group": "Institutions",
+        "value": "12 real IFSC prefixes",
+        "confidence": "reported",
+        "source": "rbi_psr",
+        "detail": "IFSC prefixes are the real four-character codes of these institutions. Account numbers are synthetic. Shares approximate relative retail footprint and only affect which prefix an account is given."
+      },
+      {
+        "group": "Illicit ticket multiplier",
+        "value": "UPI x40, IMPS x45, NEFT x12, RTGS x0.2",
+        "confidence": "assumed",
+        "source": null,
+        "detail": "Modelling choice. Laundering concentrates value into fewer, larger retail-rail transfers, and stays below RTGS's typical ticket to avoid the scrutiny that comes with it."
+      },
+      {
+        "group": "Operating rhythm",
+        "value": "9:00-19:00, 6% of ordinary and 28% of illicit activity off-hours",
+        "confidence": "assumed",
+        "source": null,
+        "detail": "Modelling choice. RTGS and NEFT settle in defined windows on working days; UPI and IMPS run 24x7, which is why retail rails carry the off-hours share."
+      }
+    ]
+  },
+  "channel_mix": [
+    {
+      "channel": "UPI",
+      "observed": 90.0,
+      "published": 85.0,
+      "note": "avg ticket Rs 1,347"
+    },
+    {
+      "channel": "NEFT",
+      "observed": 3.33,
+      "published": 10.8,
+      "note": "avg ticket Rs 48,200"
+    },
+    {
+      "channel": "IMPS",
+      "observed": 6.0,
+      "published": 4.1,
+      "note": "avg ticket Rs 9,800"
+    },
+    {
+      "channel": "RTGS",
+      "observed": 0.67,
+      "published": 0.1,
+      "note": "avg ticket Rs 5,600,000"
+    }
+  ]
+}
