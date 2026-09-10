@@ -19,24 +19,6 @@
 
 ---
 
-# Product Demo
-
-Add screenshots or a short GIF of the working AMLTrace dashboard here.
-
-Recommended screenshots:
-
-1. Overview / Dashboard
-2. Alert Queue
-3. Transaction Network
-4. Laundering Timeline
-5. Suspicious Ring / Investigation View
-6. STR Dossier
-7. Adversarial Test
-
-AMLTrace is designed as an investigation console rather than simply a transaction-scoring dashboard.
-
----
-
 # The Problem
 
 Money laundering rarely happens through one suspicious transaction.
